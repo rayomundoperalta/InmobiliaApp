@@ -1,8 +1,14 @@
 package mx.peta.inmobiliaapp;
 
+import android.content.Intent;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ImageView;
+import android.widget.Toast;
+
+import mx.peta.inmobiliaapp.login.FacebookLoginActivity;
 
 public class SplashScreenActivity extends AppCompatActivity {
 
@@ -14,9 +20,15 @@ public class SplashScreenActivity extends AppCompatActivity {
         // We are going to show the splash screen here
         splashScreen = (ImageView) findViewById(R.id.splashImage);
         splashScreen.setImageResource(R.drawable.plantaarq);
-        // We transfer the control to the FBLoginActivity to control mx.peta.inmobiliaapp.login
-        //Intent  intent = new Intent(getApplicationContext(), FBLoginActivity.class);
-        //startActivity(intent);
-        //finish();
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                // We transfer the control to the FBLoginActivity to control mx.peta.inmobiliaapp.login
+                Intent intent = new Intent(getApplicationContext(), FacebookLoginActivity.class);
+                startActivity(intent);
+                finish();
+            }
+        },1000*3);
+
     }
 }
