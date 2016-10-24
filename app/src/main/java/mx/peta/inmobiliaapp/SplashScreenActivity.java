@@ -18,6 +18,7 @@ public class SplashScreenActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash_screen);
         // We are going to show the splash screen here
+        // and transfer control to Facebook login
         splashScreen = (ImageView) findViewById(R.id.splashImage);
         splashScreen.setImageResource(R.drawable.plantaarq);
         new Handler().postDelayed(new Runnable() {

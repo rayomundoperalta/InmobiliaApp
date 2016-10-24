@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">InmobiliaApp</string>
     <string name="facebook_app_id">1090410211053064</string>
+    <string name="title_activity_mapa">MapaActivity</string>
 </resources>
