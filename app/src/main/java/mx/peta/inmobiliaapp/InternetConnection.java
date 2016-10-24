@@ -21,13 +21,6 @@ import java.net.UnknownHostException;
  * Created by rayo on 9/17/16.
  */
 public class InternetConnection {
-    public boolean isNetworkAvailable(Context context) {
-        ConnectivityManager connectivityManager
-                = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
-    }
-
     /*
         Las rutinas Executer y isOnLine trabajan correctamente
         No se puede usar el comando ping desde eestas rutinas porque no
@@ -68,6 +61,7 @@ public class InternetConnection {
         return false;
     }
 
+    // Esta rutina no la hemos probado
     public int estoyEnInternet() {
         InetAddress addr = null;
         try {
