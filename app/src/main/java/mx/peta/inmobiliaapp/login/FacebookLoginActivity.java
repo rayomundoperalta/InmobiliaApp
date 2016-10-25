@@ -90,4 +90,9 @@ public class FacebookLoginActivity extends AppCompatActivity implements Facebook
     public void onError(FacebookException error) {
         Snackbar.make(findViewById(android.R.id.content), "Rebisar la conexión a Internet", Snackbar.LENGTH_LONG).show();
     }
+
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        callbackManager.onActivityResult(requestCode,resultCode,data);
+    }
 }
