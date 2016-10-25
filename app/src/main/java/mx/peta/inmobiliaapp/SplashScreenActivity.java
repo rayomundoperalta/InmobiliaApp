@@ -25,7 +25,7 @@ public class SplashScreenActivity extends AppCompatActivity {
             @Override
             public void run() {
                 // We transfer the control to the FBLoginActivity to control mx.peta.inmobiliaapp.login
-                Intent intent = new Intent(getApplicationContext(), FacebookLoginActivity.class);
+                Intent intent = new Intent(getApplicationContext(), MapActivity.class);
                 startActivity(intent);
                 finish();
             }
