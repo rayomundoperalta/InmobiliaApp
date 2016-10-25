@@ -8,7 +8,7 @@
     <application
         android:name=".app.InmobiliaApp"
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/inmobiliaapp"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
@@ -25,16 +25,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".login.FacebookLoginActivity"></activity>
+        <activity android:name=".login.FacebookLoginActivity" />
         <activity
             android:name="com.facebook.FacebookActivity"
             android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
             android:label="@string/app_name"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
-        <activity
-            android:name=".MapaActivity"
-            android:label="@string/title_activity_mapa"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity android:name=".pruebaActivity"></activity>
     </application>
 
 </manifest>

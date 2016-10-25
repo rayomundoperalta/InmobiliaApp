@@ -19,8 +19,8 @@ import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import mx.peta.inmobiliaapp.InternetConnection;
-import mx.peta.inmobiliaapp.MapaActivity;
 import mx.peta.inmobiliaapp.R;
+import mx.peta.inmobiliaapp.pruebaActivity;
 
 import android.support.design.widget.Snackbar;
 
@@ -68,8 +68,7 @@ public class FacebookLoginActivity extends AppCompatActivity implements Facebook
         loginButton.registerCallback(callbackManager, this);
         if (AccessToken.getCurrentAccessToken() != null) {
             Snackbar.make(findViewById(android.R.id.content), "access token", Snackbar.LENGTH_SHORT).show();
-            Intent intent = new Intent(this, MapaActivity.class);
-            startActivity(new Intent(this, MapaActivity.class));
+            startActivity(new Intent(this, pruebaActivity.class));
         }
 
     }
@@ -77,8 +76,7 @@ public class FacebookLoginActivity extends AppCompatActivity implements Facebook
     @Override
     public void onSuccess(LoginResult loginResult) {
         Snackbar.make(findViewById(android.R.id.content), "Ya entramos", Snackbar.LENGTH_LONG).show();
-        Intent intent = new Intent(this, MapaActivity.class);
-        startActivity(new Intent(this, MapaActivity.class));
+        startActivity(new Intent(this, pruebaActivity.class));
     }
 
     @Override
@@ -89,5 +87,11 @@ public class FacebookLoginActivity extends AppCompatActivity implements Facebook
     @Override
     public void onError(FacebookException error) {
         Snackbar.make(findViewById(android.R.id.content), "Rebisar la conexión a Internet", Snackbar.LENGTH_LONG).show();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        callbackManager.onActivityResult(requestCode,resultCode,data);
     }
 }
