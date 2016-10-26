@@ -25,7 +25,7 @@
 
         <activity
             android:name=".SplashScreenActivity"
-            android:theme="@style/Theme.AppCompat.NoActionBar"> <!-- esta linea quita el actionbar de la actividad -->
+            android:theme="@style/Theme.AppCompat.NoActionBar">  <!-- esta linea quita el actionbar de la actividad -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
