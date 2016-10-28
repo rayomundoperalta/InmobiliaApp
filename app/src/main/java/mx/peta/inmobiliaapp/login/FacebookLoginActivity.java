@@ -18,6 +18,7 @@ import android.widget.Toast;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import mx.peta.inmobiliaapp.DrawerActivity;
 import mx.peta.inmobiliaapp.InternetConnection;
 import mx.peta.inmobiliaapp.MapActivity;
 import mx.peta.inmobiliaapp.R;
@@ -68,7 +69,7 @@ public class FacebookLoginActivity extends AppCompatActivity implements Facebook
         loginButton.registerCallback(callbackManager, this);
         if (AccessToken.getCurrentAccessToken() != null) {
             Snackbar.make(findViewById(android.R.id.content), "access token", Snackbar.LENGTH_SHORT).show();
-            startActivity(new Intent(this, MapActivity.class));
+            startActivity(new Intent(this, DrawerActivity.class));
         }
 
     }
@@ -76,7 +77,7 @@ public class FacebookLoginActivity extends AppCompatActivity implements Facebook
     @Override
     public void onSuccess(LoginResult loginResult) {
         Snackbar.make(findViewById(android.R.id.content), "Ya entramos", Snackbar.LENGTH_LONG).show();
-        startActivity(new Intent(this, MapActivity.class));
+        startActivity(new Intent(this, DrawerActivity.class));
     }
 
     @Override

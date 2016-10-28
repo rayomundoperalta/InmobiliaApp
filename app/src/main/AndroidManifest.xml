@@ -23,14 +23,15 @@
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id" />
 
-        <activity
-            android:name=".SplashScreenActivity"
-            android:theme="@style/Theme.AppCompat.NoActionBar">  <!-- esta linea quita el actionbar de la actividad -->
+        <activity android:name=".SplashScreenActivity" android:theme="@style/Theme.AppCompat.NoActionBar">
+            <!-- android:theme="@style/Theme.AppCompat.NoActionBar">  esta linea quita el actionbar de la actividad -->
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
         </activity>
         <activity android:name=".login.FacebookLoginActivity" />
         <activity
@@ -53,7 +54,19 @@
 
         <activity
             android:name=".MapActivity"
-            android:label="@string/title_activity_map"></activity>
-    </application>
+            android:label="@string/title_activity_map">
 
+        </activity>
+
+        <activity
+            android:name=".DrawerActivity"
+            android:label="Navegacion"
+            android:theme="@style/Theme.AppCompat.NoActionBar">
+
+        </activity>
+
+        <activity android:name=".NavigationActivity" android:theme="@style/Theme.AppCompat.NoActionBar">
+
+        </activity>
+    </application>
 </manifest>
