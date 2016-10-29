@@ -11,12 +11,21 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+
 public class DrawerActivity extends AppCompatActivity {
 
     //Defining Variables
     private Toolbar toolbar;
     private NavigationView navigationView;
     private DrawerLayout drawerLayout;
+
+    private MapHelper mapHelper = MapHelper.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,11 +60,15 @@ public class DrawerActivity extends AppCompatActivity {
 
                     //Replacing the main content with ContentFragment Which is our Inbox View;
                     case R.id.inbox:
-                        Toast.makeText(getApplicationContext(),"Inbox Selected",Toast.LENGTH_SHORT).show();
-                        ContentFragment fragment = new ContentFragment();
-                        android.support.v4.app.FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-                        fragmentTransaction.replace(R.id.frame,fragment);
-                        fragmentTransaction.commit();
+                        //Toast.makeText(getApplicationContext(),"Inbox Selected",Toast.LENGTH_SHORT).show();
+                        //ContentFragment fragment = new ContentFragment();
+                        //android.support.v4.app.FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+                        //fragmentTransaction.replace(R.id.map,fragment);
+                        //fragmentTransaction.commit();
+                        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                                .findFragmentById(R.id.map);
+                        mapFragment.getMapAsync(mapHelper);
+
                         return true;
 
                     // For rest of the options we just show a toast on click
@@ -109,6 +122,10 @@ public class DrawerActivity extends AppCompatActivity {
 
         //calling sync state is necessay or else your hamburger icon wont show up
         actionBarDrawerToggle.syncState();
+
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map);
+        mapFragment.getMapAsync(mapHelper);
     }
 
     @Override

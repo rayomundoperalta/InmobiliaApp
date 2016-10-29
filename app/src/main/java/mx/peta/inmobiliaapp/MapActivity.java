@@ -39,7 +39,9 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
         mMap = googleMap;
 
         // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(151, -34);
+        // coordenadas de la Ciudad de México 19.3424545,-99.1843678
+        LatLng mexico = new LatLng(19.3424545,-99.1843678);
+        LatLng sydney = new LatLng(-34, 151);
         mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
     }
