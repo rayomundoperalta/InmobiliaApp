@@ -25,16 +25,15 @@ public class MapHelper implements OnMapReadyCallback {
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        // Add a marker in Sydney and move the camera
+        // Add a marker in Mexico and move the camera
         // coordenadas de la Ciudad de México 19.3424545,-99.1843678
-        LatLng mexico = new LatLng(19.3424545,-99.1843678);
-        //LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(mexico).title("CDMX"));
+        LatLng mexico = new LatLng(19.341822116645, -99.183682);
+        mMap.addMarker(new MarkerOptions().position(mexico).title("Tuera 55").snippet("R$35,000 V$8,000,000"));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(mexico));
         CameraPosition cameraPosition = CameraPosition.builder()
                 .target(mexico)
                 .zoom(15)
-                .bearing(90)
+                .bearing(0)
                 .build();
 
         // Animate the change in camera view over 2 seconds

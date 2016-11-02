@@ -25,6 +25,7 @@ public class DrawerActivity extends AppCompatActivity {
     private NavigationView navigationView;
     private DrawerLayout drawerLayout;
 
+    SupportMapFragment mapFragment;
     private MapHelper mapHelper = MapHelper.getInstance();
 
     @Override
@@ -38,6 +39,8 @@ public class DrawerActivity extends AppCompatActivity {
 
         //Initializing NavigationView
         navigationView = (NavigationView) findViewById(R.id.navigation_view);
+        mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map);
 
         //Setting Navigation View Item Selected Listener to handle the item click of the navigation menu
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
@@ -65,8 +68,7 @@ public class DrawerActivity extends AppCompatActivity {
                         //android.support.v4.app.FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
                         //fragmentTransaction.replace(R.id.map,fragment);
                         //fragmentTransaction.commit();
-                        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                                .findFragmentById(R.id.map);
+
                         mapFragment.getMapAsync(mapHelper);
 
                         return true;
@@ -99,7 +101,7 @@ public class DrawerActivity extends AppCompatActivity {
             }
         });
 
-        // Initializing Drawer Layout and ActionBarToggle
+        // Initializing Drawer Layout and ActionBarToggle, this is the hamburger
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer);
         ActionBarDrawerToggle actionBarDrawerToggle = new ActionBarDrawerToggle(this,drawerLayout,toolbar,R.string.openDrawer, R.string.closeDrawer){
 
@@ -107,6 +109,7 @@ public class DrawerActivity extends AppCompatActivity {
             public void onDrawerClosed(View drawerView) {
                 // Code here will be triggered once the drawer closes as we dont want anything to happen so we leave this blank
                 super.onDrawerClosed(drawerView);
+                Toast.makeText(getApplicationContext(),"cerre la hamburgesa",Toast.LENGTH_LONG).show();
             }
 
             @Override
@@ -114,6 +117,7 @@ public class DrawerActivity extends AppCompatActivity {
                 // Code here will be triggered once the drawer open as we dont want anything to happen so we leave this blank
 
                 super.onDrawerOpened(drawerView);
+                Toast.makeText(getApplicationContext(),"abri la hamburgesa", Toast.LENGTH_LONG).show();
             }
         };
 
@@ -123,8 +127,6 @@ public class DrawerActivity extends AppCompatActivity {
         //calling sync state is necessay or else your hamburger icon wont show up
         actionBarDrawerToggle.syncState();
 
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
         mapFragment.getMapAsync(mapHelper);
     }
 
@@ -132,6 +134,7 @@ public class DrawerActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
+        Toast.makeText(getApplicationContext(),"creamos el menu de opciones", Toast.LENGTH_LONG).show();
         return true;
     }
 
@@ -144,6 +147,7 @@ public class DrawerActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            Toast.makeText(getApplicationContext(), "seleccionamos settings", Toast.LENGTH_LONG).show();
             return true;
         }
 

@@ -32,7 +32,8 @@
             android:id="@+id/allmail"
             android:checked="false"
             android:icon="@drawable/ic_email_black"
-            android:title="@string/all_mail_string" />
+            android:title="@string/all_mail_string"
+            />
         <item
             android:id="@+id/trash"
             android:checked="false"
