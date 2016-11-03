@@ -1,14 +1,22 @@
 package mx.peta.inmobiliaapp;
 
+import android.content.Context;
+import android.content.Intent;
+import android.graphics.Color;
+import android.os.Handler;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.AttributeSet;
+import android.view.InflateException;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -62,15 +70,9 @@ public class DrawerActivity extends AppCompatActivity {
 
 
                     //Replacing the main content with ContentFragment Which is our Inbox View;
-                    case R.id.inbox:
-                        //Toast.makeText(getApplicationContext(),"Inbox Selected",Toast.LENGTH_SHORT).show();
-                        //ContentFragment fragment = new ContentFragment();
-                        //android.support.v4.app.FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-                        //fragmentTransaction.replace(R.id.map,fragment);
-                        //fragmentTransaction.commit();
-
-                        mapFragment.getMapAsync(mapHelper);
-
+                    case R.id.capturaPropiedad:
+                        Intent intent = new Intent(getApplicationContext(), CapturaEstadoMunicipio.class);
+                        startActivity(intent);
                         return true;
 
                     // For rest of the options we just show a toast on click
@@ -146,12 +148,11 @@ public class DrawerActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            Toast.makeText(getApplicationContext(), "seleccionamos settings", Toast.LENGTH_LONG).show();
-            return true;
+        switch (id) {
+            case R.id.action_settings:
+                Toast.makeText(getApplicationContext(), "seleccionamos configuracion", Toast.LENGTH_LONG).show();
+                return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
-
 }

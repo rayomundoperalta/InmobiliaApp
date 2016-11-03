@@ -5,6 +5,7 @@
     <color name="colorAccent">#FF4081</color>
     <color name="blanco">#FFFFFF</color>
     <color name="negro">#000000</color>
+    <color name="rojo">#E11000</color>
     <color name="verde">#2CDE4A</color>
     <color name="PrimaryColor">#2196F3</color>
     <color name="PrimaryDarkColor">#1976D2</color>
