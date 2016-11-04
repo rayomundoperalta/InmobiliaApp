@@ -56,15 +56,17 @@
 
         <activity
             android:name=".MapActivity"
-            android:label="@string/title_activity_map"></activity>
+            android:label="@string/title_activity_map" />
         <activity
-            android:name=".DrawerActivity"
+            android:name=".VistaInicial"
             android:label="Inmobilia"
-            android:theme="@style/Theme.AppCompat.NoActionBar"></activity>
+            android:theme="@style/Theme.AppCompat.NoActionBar" />
         <activity
             android:name=".NavigationActivity"
-            android:theme="@style/Theme.AppCompat.NoActionBar"></activity>
-        <activity android:name=".CapturaEstadoMunicipio"></activity>
+            android:theme="@style/Theme.AppCompat.NoActionBar" />
+        <activity android:name=".CapturaEstadoMunicipio" />
+        <activity android:name=".CapturaDatosNumericos" />
+        <activity android:name=".ProximidadUrbana"></activity>
     </application>
 
 </manifest>

@@ -7,7 +7,7 @@
     android:id="@+id/drawer"
     android:fitsSystemWindows="true"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".DrawerActivity">
+    tools:context=".VistaInicial">
 
     <LinearLayout
         android:layout_height="match_parent"
@@ -27,7 +27,7 @@
             android:name="com.google.android.gms.maps.SupportMapFragment"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            tools:context="mx.peta.inmobiliaapp.DrawerActivity"
+            tools:context="mx.peta.inmobiliaapp.VistaInicial"
             android:layout_weight="1"/>
 
     </LinearLayout>

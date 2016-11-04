@@ -327,7 +327,7 @@ public class EstadosMunicipiosExpandableListDataPump {
         DistritoFederal.add(new Municipio("Iztapalapa", "9007"));
         DistritoFederal.add(new Municipio("La Magdalena Contreras", "9008"));
         DistritoFederal.add(new Municipio("Milpa Alta", "9009"));
-        DistritoFederal.add(new Municipio("Álvaro Obregón", "9010"));
+        DistritoFederal.add(new Municipio("Alvaro Obregón", "9010"));
         DistritoFederal.add(new Municipio("Tláhuac", "9011"));
         DistritoFederal.add(new Municipio("Tlalpan", "9012"));
         DistritoFederal.add(new Municipio("Xochimilco", "9013"));
@@ -837,7 +837,7 @@ public class EstadosMunicipiosExpandableListDataPump {
         México.add(new Municipio("Tonanitla", "15125"));
         MichoacándeOcampo.add(new Municipio("Acuitzio", "16001"));
         MichoacándeOcampo.add(new Municipio("Aguililla", "16002"));
-        MichoacándeOcampo.add(new Municipio("Álvaro Obregón", "16003"));
+        MichoacándeOcampo.add(new Municipio("Alvaro Obregón", "16003"));
         MichoacándeOcampo.add(new Municipio("Angamacutiro", "16004"));
         MichoacándeOcampo.add(new Municipio("Angangueo", "16005"));
         MichoacándeOcampo.add(new Municipio("Apatzingán", "16006"));
@@ -1225,7 +1225,7 @@ public class EstadosMunicipiosExpandableListDataPump {
         Oaxaca.add(new Municipio("San José Tenango", "20171"));
         Oaxaca.add(new Municipio("San Juan Achiutla", "20172"));
         Oaxaca.add(new Municipio("San Juan Atepec", "20173"));
-        Oaxaca.add(new Municipio("Ánimas Trujano", "20174"));
+        Oaxaca.add(new Municipio("Animas Trujano", "20174"));
         Oaxaca.add(new Municipio("San Juan Bautista Atatlahuca", "20175"));
         Oaxaca.add(new Municipio("San Juan Bautista Coixtlahuaca", "20176"));
         Oaxaca.add(new Municipio("San Juan Bautista Cuicatlán", "20177"));
@@ -2294,7 +2294,7 @@ public class EstadosMunicipiosExpandableListDataPump {
         VeracruzdeIgnaciodelaLlave.add(new Municipio("Castillo de Teayo", "30157"));
         VeracruzdeIgnaciodelaLlave.add(new Municipio("Tecolutla", "30158"));
         VeracruzdeIgnaciodelaLlave.add(new Municipio("Tehuipango", "30159"));
-        VeracruzdeIgnaciodelaLlave.add(new Municipio("Álamo Temapache", "30160"));
+        VeracruzdeIgnaciodelaLlave.add(new Municipio("Alamo Temapache", "30160"));
         VeracruzdeIgnaciodelaLlave.add(new Municipio("Tempoal", "30161"));
         VeracruzdeIgnaciodelaLlave.add(new Municipio("Tenampa", "30162"));
         VeracruzdeIgnaciodelaLlave.add(new Municipio("Tenochtitlán", "30163"));
@@ -2511,6 +2511,39 @@ public class EstadosMunicipiosExpandableListDataPump {
         Zacatecas.add(new Municipio("Zacatecas", "32056"));
         Zacatecas.add(new Municipio("Trancoso", "32057"));
         Zacatecas.add(new Municipio("Santa María de la Paz", "32058"));
+
+        Collections.sort(Zacatecas);
+        Collections.sort(Yucatán);
+        Collections.sort(VeracruzdeIgnaciodelaLlave);
+        Collections.sort(Tlaxcala);
+        Collections.sort(Tamaulipas     );
+        Collections.sort(Tabasco);
+        Collections.sort(Sonora);
+        Collections.sort(Sinaloa);
+        Collections.sort(SanLuisPotosí);
+        Collections.sort(QuintanaRoo);
+        Collections.sort(Querétaro);
+        Collections.sort(Puebla);
+        Collections.sort(Oaxaca);
+        Collections.sort(NuevoLeón);
+        Collections.sort(Nayarit);
+        Collections.sort(Morelos);
+        Collections.sort(MichoacándeOcampo);
+        Collections.sort(México);
+        Collections.sort(Jalisco);
+        Collections.sort(Hidalgo);
+        Collections.sort(Guerrero);
+        Collections.sort(Guanajuato);
+        Collections.sort(Durango);
+        Collections.sort(DistritoFederal);
+        Collections.sort(Colima);
+        Collections.sort(CoahuiladeZaragoza);
+        Collections.sort(Chihuahua);
+        Collections.sort(Chiapas);
+        Collections.sort(Campeche);
+        Collections.sort(BajaCalifornia);
+        Collections.sort(BajaCaliforniaSur);
+        Collections.sort(Aguascalientes);
 
         catalogoMun.put("Zacatecas", Zacatecas);
         catalogoMun.put("Yucatán", Yucatán);
