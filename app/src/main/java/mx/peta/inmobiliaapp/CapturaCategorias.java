@@ -85,7 +85,7 @@ public class CapturaCategorias extends AppCompatActivity {
             public void onItemSelected(AdapterView<?> parent, View view,
                                        int position, long id) {
                 Log.v("item", (String) parent.getItemAtPosition(position));
-                propiedad.setProximidadUrbana((double) (position + 1));
+                propiedad.setTipologia((double) (position + 1));
             }
 
             @Override
@@ -109,7 +109,7 @@ public class CapturaCategorias extends AppCompatActivity {
             public void onItemSelected(AdapterView<?> parent, View view,
                                        int position, long id) {
                 Log.v("item", (String) parent.getItemAtPosition(position));
-                propiedad.setProximidadUrbana((double) (position + 1));
+                propiedad.setClaseInmueble((double) (position + 1));
             }
 
             @Override
