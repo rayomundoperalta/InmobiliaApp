@@ -66,7 +66,12 @@
             android:theme="@style/Theme.AppCompat.NoActionBar" />
         <activity android:name=".CapturaEstadoMunicipio" />
         <activity android:name=".CapturaDatosNumericos" />
-        <activity android:name=".ProximidadUrbana"></activity>
+        <activity android:name=".CapturaCategorias" />
+
+        <service
+            android:name=".Servicios.ServicioGPS"
+            android:enabled="true"
+            android:exported="true"></service>
     </application>
 
 </manifest>

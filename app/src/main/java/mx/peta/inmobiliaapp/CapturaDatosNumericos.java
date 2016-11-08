@@ -62,7 +62,7 @@ public class CapturaDatosNumericos extends AppCompatActivity {
                             propiedad.getSuperConstruido() > 0.0 ||
                             propiedad.getValConst() > 0.0 ||
                             propiedad.getValConcluido() > 0.0) {
-                        Intent intent = new Intent(getApplicationContext(), ProximidadUrbana.class);
+                        Intent intent = new Intent(getApplicationContext(), CapturaCategorias.class);
                         startActivity(intent);
                     } else {
                         Toast.makeText(getApplicationContext(),"Se deben introducir todos los valores, no se aceptan ceros",Toast.LENGTH_LONG).show();
