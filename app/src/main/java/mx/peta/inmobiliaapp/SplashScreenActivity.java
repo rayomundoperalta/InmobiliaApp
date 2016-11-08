@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import mx.peta.inmobiliaapp.expandablelistview.CatalogoEstadoMunicipio;
 import mx.peta.inmobiliaapp.login.FacebookLoginActivity;
 
 public class SplashScreenActivity extends AppCompatActivity {
@@ -27,6 +28,8 @@ public class SplashScreenActivity extends AppCompatActivity {
                 // We transfer the control to the FBLoginActivity to control mx.peta.inmobiliaapp.login
                 Intent intent = new Intent(getApplicationContext(), FacebookLoginActivity.class);
                 startActivity(intent);
+                CatalogoEstadoMunicipio.getInstance(); // Solo queremos que se inicalize la instancia aquí
+                System.out.println("Inmobilia Inicializamos el catalogo durante el splas");
                 finish();
             }
         },1000*1);

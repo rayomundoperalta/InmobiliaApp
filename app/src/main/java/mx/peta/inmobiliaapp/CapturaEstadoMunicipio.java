@@ -20,15 +20,19 @@ import mx.peta.inmobiliaapp.expandablelistview.Municipio;
 
 public class CapturaEstadoMunicipio extends AppCompatActivity {
 
-    ExpandableListView expandableListView;
-    ExpandableListAdapter expandableListAdapter;
-    List<String> expandableListTitle;
-    HashMap<String, List<Municipio>> expandableListDetail;
+    private ExpandableListView expandableListView;
+    private ExpandableListAdapter expandableListAdapter;
+    private List<String> expandableListTitle;
+    private HashMap<String, List<Municipio>> expandableListDetail;
+    private Propiedad propiedad = Propiedad.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_captura_estado_municipio);
+
+        // Inicializamos registro propiedad
+        propiedad.setTakingPhotoState(false);
 
         // localizamos el elemento grafico que implementa el expandable list view
         expandableListView = (ExpandableListView) findViewById(R.id.expandableListView);

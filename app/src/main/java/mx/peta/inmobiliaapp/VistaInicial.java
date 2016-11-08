@@ -20,6 +20,7 @@ public class VistaInicial extends AppCompatActivity {
     private Toolbar toolbar;
     private NavigationView navigationView;
     private DrawerLayout drawerLayout;
+    private Propiedad propiedad = Propiedad.getInstance();
 
     SupportMapFragment mapFragment;
     private MapHelper mapHelper = MapHelper.getInstance();
@@ -32,6 +33,9 @@ public class VistaInicial extends AppCompatActivity {
         // Initializing Toolbar and setting it as the actionbar
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        // Inicializamos el registro propiedad
+        propiedad.setTakingPhotoState(false);
 
         //Initializing NavigationView
         navigationView = (NavigationView) findViewById(R.id.navigation_view);

@@ -51,14 +51,11 @@ public class CapturaCategorias extends AppCompatActivity {
     String bitmapFileName = null;
     String carpetaPropiedades;
     Intent takePictureIntent;
-    final TakingPhotoState photoState = TakingPhotoState.getInstance();
 
     @Override
     protected void onResume() {
         super.onResume();
-        if (photoState.getTakingPhotoState()) {
-            setPic(photoState.getPhotoFileName(), mImageView);
-        }
+
     }
 
     @Override
@@ -93,6 +90,9 @@ public class CapturaCategorias extends AppCompatActivity {
         mImageView = (ImageView) findViewById(R.id.imageViewPropiedad);
         mImageView.setClickable(true);
 
+        if (propiedad.getTakingPhotoState()) {
+            setPic(propiedad.getPhotoFileName(), mImageView);
+        }
 
         mImageView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -101,7 +101,7 @@ public class CapturaCategorias extends AppCompatActivity {
                 takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 // Se verifica si hay una aplicacion que pueda tomar la foto
                 if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-                    photoState.setTakingPhotoState(true);
+                    propiedad.setTakingPhotoState(true);
                     System.out.println("Inmobilia Geting photo");
                     startActivityForResult(takePictureIntent, 100);
                 }
@@ -208,7 +208,7 @@ public class CapturaCategorias extends AppCompatActivity {
                     e.printStackTrace();
                 }
             }
-            photoState.setPhotoFileName(savedBitmap.toString());
+            propiedad.setPhotoFileName(savedBitmap.toString());
 
             // Hay que almacenar el nombre del archivo en SQLite junto con los datos del inmueble
         }

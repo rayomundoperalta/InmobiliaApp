@@ -7,7 +7,7 @@
     android:id="@+id/drawer"
     android:fitsSystemWindows="true"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".VistaInicial">
+    tools:context=".CapturaEstadoMunicipio">
 
     <ExpandableListView
         android:id="@+id/expandableListView"

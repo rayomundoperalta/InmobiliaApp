@@ -4,13 +4,42 @@ package mx.peta.inmobiliaapp;
  * Created by rayo on 11/3/16.
  */
 public class Propiedad {
-    private static Propiedad ourInstance = new Propiedad();
+    private static Propiedad instance = null;
 
     public static Propiedad getInstance() {
-        return ourInstance;
+        if (instance == null) {
+            instance = new Propiedad();
+        }
+        return instance;
     }
 
     private Propiedad() {
+    }
+
+
+
+    private double latitud = 0.0;
+    public double getLatitud() { return this.latitud; }
+    public void setLatitud(double latitud) { this.latitud = latitud; }
+
+    private double longitud = 0.0;
+    public double getLongitud() { return this.longitud; }
+    public void setLongitud(double longitud) { this.longitud = longitud; }
+
+    private boolean takingPhotoState = false;
+    public boolean getTakingPhotoState() {
+        return this.takingPhotoState;
+    }
+    public void setTakingPhotoState(boolean takingPhotoState) {
+        this.takingPhotoState = takingPhotoState;
+    }
+
+    private String photoFileName = null;
+    public String getPhotoFileName() {
+        return this.photoFileName;
+    }
+    public void setPhotoFileName(String photoFileName) {
+        this.photoFileName = photoFileName;
     }
 
     /*

@@ -28,6 +28,7 @@ public class CapturaDatosNumericos extends AppCompatActivity {
         setContentView(R.layout.activity_captura_datos_numericos);
 
         propiedad = Propiedad.getInstance();
+        propiedad.setTakingPhotoState(false);
 
         editTextCP = (EditText) findViewById(R.id.editTextCP);
         editTextVidaUtil = (EditText) findViewById(R.id.editTextVidaUtil);

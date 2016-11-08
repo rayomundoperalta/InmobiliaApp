@@ -66,9 +66,6 @@
             android:name=".VistaInicial"
             android:label="Inmobilia"
             android:theme="@style/Theme.AppCompat.NoActionBar" />
-        <activity
-            android:name=".NavigationActivity"
-            android:theme="@style/Theme.AppCompat.NoActionBar" />
         <activity android:name=".CapturaEstadoMunicipio" />
         <activity android:name=".CapturaDatosNumericos" />
         <activity android:name=".CapturaCategorias"

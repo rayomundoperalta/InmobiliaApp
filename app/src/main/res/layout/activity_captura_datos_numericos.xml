@@ -11,7 +11,7 @@
     android:id="@+id/drawer"
     android:fitsSystemWindows="true"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".VistaInicial">
+    tools:context=".CapturaDatosNumericos">
 
     <LinearLayout
         android:orientation="vertical"
