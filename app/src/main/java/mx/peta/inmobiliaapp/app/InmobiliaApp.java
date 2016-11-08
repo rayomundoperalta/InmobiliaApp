@@ -5,6 +5,8 @@ import android.app.Application;
 import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
 
+import mx.peta.inmobiliaapp.TakingPhotoState;
+
 /**
  * Created by rayo on 10/24/16.
  */

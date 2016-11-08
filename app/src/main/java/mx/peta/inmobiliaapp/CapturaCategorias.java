@@ -1,8 +1,17 @@
 package mx.peta.inmobiliaapp;
 
+import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Point;
+import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.format.DateFormat;
 import android.util.Log;
+import android.view.Display;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -13,6 +22,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.GregorianCalendar;
+import java.util.TimeZone;
 
 import mx.peta.inmobiliaapp.Servicios.LatLong;
 import mx.peta.inmobiliaapp.Servicios.ServicioGPS;
@@ -37,6 +50,16 @@ public class CapturaCategorias extends AppCompatActivity {
     File photoFile = null;
     String bitmapFileName = null;
     String carpetaPropiedades;
+    Intent takePictureIntent;
+    final TakingPhotoState photoState = TakingPhotoState.getInstance();
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (photoState.getTakingPhotoState()) {
+            setPic(photoState.getPhotoFileName(), mImageView);
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +86,27 @@ public class CapturaCategorias extends AppCompatActivity {
         LatLong latLong = servicioGPS.getLatLong();
         textViewLatitud.setText(Double.toString(latLong.getLatitud()));
         textViewLonguitud.setText(Double.toString(latLong.getLongitud()));
+
+        /* Código que se necesita para tomar la foto */
+
+        carpetaPropiedades = verificarCrearCarpeta("propiedades");
+        mImageView = (ImageView) findViewById(R.id.imageViewPropiedad);
+        mImageView.setClickable(true);
+
+
+        mImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(getApplicationContext(), "Image Touch", Toast.LENGTH_LONG).show();
+                takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                // Se verifica si hay una aplicacion que pueda tomar la foto
+                if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+                    photoState.setTakingPhotoState(true);
+                    System.out.println("Inmobilia Geting photo");
+                    startActivityForResult(takePictureIntent, 100);
+                }
+            }
+        });
 
         /* se habilitan los sppiners */
         spinnerProximidadUrbana = (Spinner) findViewById(R.id.spinnerProximidadUrbana);
@@ -136,5 +180,106 @@ public class CapturaCategorias extends AppCompatActivity {
                 // TODO Auto-generated method stub
             }
         });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        System.out.println("Inmobilia onActivity result");
+        if (requestCode == 100 && resultCode == RESULT_OK) {
+
+            Bundle extras = data.getExtras();
+            Bitmap imageBitmap = (Bitmap) extras.get("data");
+
+            // Hay que salvar el bitmap a disco
+            File savedBitmap = createImageFile(carpetaPropiedades);
+            FileOutputStream out = null;
+            try {
+                out = new FileOutputStream(savedBitmap);
+                imageBitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
+                // PNG is a lossless format, the compression factor (100) is ignored
+            } catch (Exception e) {
+                System.out.println("Inmobilia error while writing a image to disk");
+            } finally {
+                try {
+                    if (out != null) {
+                        out.close();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            photoState.setPhotoFileName(savedBitmap.toString());
+
+            // Hay que almacenar el nombre del archivo en SQLite junto con los datos del inmueble
+        }
+    }
+
+    private File createImageFile(String filePath) {  // Crea el path unico para almacenar una imagen
+        // Create an image file name
+        // the image will be stored in the DCIM directory
+        GregorianCalendar calendar = new GregorianCalendar();
+        calendar.setTimeZone(TimeZone.getDefault());
+        long dateTaken = calendar.getTimeInMillis();
+
+        File dir = new File(filePath + "/");
+        final File photoFile = new File(dir, DateFormat.format("yyyyMMdd_kkmmss", dateTaken).toString() + ".jpg");
+
+        return photoFile;
+    }
+
+    private String verificarCrearCarpeta(String dirname) {
+        String dir = "unknown";
+        PackageManager m = getPackageManager();
+        String packageName = getPackageName();
+        try {
+            PackageInfo p = m.getPackageInfo(packageName, 0);
+            dir = p.applicationInfo.dataDir;
+        } catch (PackageManager.NameNotFoundException e) {
+            System.out.println(packageName + " Error Package name not found ");
+            return null;
+        }
+
+        System.out.println("Inmobilia app directory " + dir);
+        dir = dir + "/" + dirname;
+        System.out.println("Inmobilia property directory " + dir);
+        File f = new File(dir);
+
+        // Comprobamos si la carpeta está ya creada
+        // Si la carpeta no está creada, la creamos.
+        if(!f.isDirectory()) {
+            System.out.println("Inmobilia creating directory");
+            File myNewFolder = new File(dir);
+            myNewFolder.mkdir(); //creamos la carpeta
+        }
+        if (f.isDirectory()) {
+            System.out.println("Inmobilia directory exist");
+        }
+        return dir;
+    }
+
+    private void setPic(String mCurrentPhotoFilePath, ImageView mImageView) {
+        // Get the dimensions of the View
+        Display display = getWindowManager().getDefaultDisplay();  // Recuperamos las características del display
+        Point size = new Point();;
+        display.getSize(size); // size contiene el tamaño del display en pixels
+        int imageSize = (int) (Math.min(size.x,size.y) / 3); // el tamaño de la imagen sera una tercera parte del lado mas corto
+
+        // Get the dimensions of the bitmap
+        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+        bmOptions.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(mCurrentPhotoFilePath, bmOptions);
+        int photoW = bmOptions.outWidth;
+        int photoH = bmOptions.outHeight;
+
+        // Determine how much to scale down the image
+        int scaleFactor = Math.min(photoW/imageSize, photoH/imageSize);
+
+        // Decode the image file into a Bitmap sized to fill the View
+        bmOptions.inJustDecodeBounds = false;
+        bmOptions.inSampleSize = scaleFactor;
+        bmOptions.inPurgeable = true;
+
+        Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoFilePath, bmOptions);
+        mImageView.setImageBitmap(bitmap);
     }
 }
