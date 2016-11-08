@@ -10,9 +10,14 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import java.io.File;
 
 import mx.peta.inmobiliaapp.Servicios.LatLong;
 import mx.peta.inmobiliaapp.Servicios.ServicioGPS;
+
+import static mx.peta.inmobiliaapp.R.id.btnFin;
 
 public class CapturaCategorias extends AppCompatActivity {
 
@@ -20,14 +25,18 @@ public class CapturaCategorias extends AppCompatActivity {
     private Spinner spinnerProximidadUrbana;
     private Spinner spinnerTipologia;
     private Spinner spinnerClaseInmueble;
-    private Button buttonFoto;
-    private Button buttonFin;
+    private Button btnFoto;
+    private Button btnFin;
     private ImageView mImageView;
     private TextView textViewLatitud;
     private TextView textViewLonguitud;
 
     private LatLong latLong = new LatLong();
     ServicioGPS servicioGPS;
+
+    File photoFile = null;
+    String bitmapFileName = null;
+    String carpetaPropiedades;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +48,16 @@ public class CapturaCategorias extends AppCompatActivity {
         mImageView.setClickable(true);
         textViewLatitud = (TextView) findViewById(R.id.textViewLat);
         textViewLonguitud = (TextView) findViewById(R.id.textViewLong);
+
+        btnFin = (Button) findViewById(R.id.btnFin);
+        btnFin.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(getApplicationContext(), "closing the app", Toast.LENGTH_SHORT).show();
+                finishAffinity();
+            }
+        });
 
         servicioGPS = new ServicioGPS(getApplicationContext());
         LatLong latLong = servicioGPS.getLatLong();

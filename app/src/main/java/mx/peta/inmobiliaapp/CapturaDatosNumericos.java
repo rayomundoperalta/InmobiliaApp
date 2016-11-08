@@ -56,11 +56,11 @@ public class CapturaDatosNumericos extends AppCompatActivity {
                     s = editTextValorConcluido.getText().toString();
                     if (s.compareTo("") != 0) { propiedad.setValConcluido((Double.valueOf(s)).doubleValue()); }
 
-                    if (propiedad.getCP() > 0.0 ||
-                            propiedad.getVidaUtil() > 0.0 ||
-                            propiedad.getSuperTerreno() > 0.0 ||
-                            propiedad.getSuperConstruido() > 0.0 ||
-                            propiedad.getValConst() > 0.0 ||
+                    if (propiedad.getCP() > 0.0 &&
+                            propiedad.getVidaUtil() > 0.0 &&
+                            propiedad.getSuperTerreno() > 0.0 &&
+                            propiedad.getSuperConstruido() > 0.0 &&
+                            propiedad.getValConst() > 0.0 &&
                             propiedad.getValConcluido() > 0.0) {
                         Intent intent = new Intent(getApplicationContext(), CapturaCategorias.class);
                         startActivity(intent);
