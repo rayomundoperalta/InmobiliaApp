@@ -67,7 +67,7 @@ public class ServicioGPS extends Service implements LocationListener {
                 location = locationManager.getLastKnownLocation(locationManager.GPS_PROVIDER);
                 latitud = location.getLatitude();
                 longitud = location.getLongitude();
-                locationManager.removeUpdates(this);
+                //locationManager.removeUpdates(this);
             }
         } else {
             Toast.makeText(ctx, "Se requiere usar el GPS",Toast.LENGTH_LONG).show();

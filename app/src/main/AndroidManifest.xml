@@ -3,6 +3,7 @@
     package="mx.peta.inmobiliaapp">
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
 
     <!--
@@ -11,6 +12,13 @@
          location permissions for the 'MyLocation' functionality. 
     -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
+    <uses-feature android:name="android.hardware.location.gps" />
+    <uses-feature android:name="android.hardware.camera" />
 
     <application
         android:name=".app.InmobiliaApp"
@@ -55,9 +63,6 @@
             android:value="@string/google_maps_key" />
 
         <activity
-            android:name=".MapActivity"
-            android:label="@string/title_activity_map" />
-        <activity
             android:name=".VistaInicial"
             android:label="Inmobilia"
             android:theme="@style/Theme.AppCompat.NoActionBar" />
@@ -66,7 +71,8 @@
             android:theme="@style/Theme.AppCompat.NoActionBar" />
         <activity android:name=".CapturaEstadoMunicipio" />
         <activity android:name=".CapturaDatosNumericos" />
-        <activity android:name=".CapturaCategorias" />
+        <activity android:name=".CapturaCategorias"
+            android:screenOrientation="portrait"/>
 
         <service
             android:name=".Servicios.ServicioGPS"
