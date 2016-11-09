@@ -79,7 +79,7 @@
                 android:layout_weight="1" />
 
             <TextView
-                android:text="00:00:00"
+                android:text="0.0"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/textViewLat"
@@ -93,7 +93,7 @@
                 android:layout_weight="1" />
 
             <TextView
-                android:text="00:00:00"
+                android:text="0.0"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/textViewLong"
@@ -118,7 +118,7 @@
                 style="@style/Widget.AppCompat.Button" />
 
             <Button
-                android:text="Fin"
+                android:text="Capturada"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/btnFin"

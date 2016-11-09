@@ -29,6 +29,18 @@ import java.util.TimeZone;
 
 import mx.peta.inmobiliaapp.Servicios.LatLong;
 import mx.peta.inmobiliaapp.Servicios.ServicioGPS;
+import mx.peta.inmobiliaapp.validadorWebService.AvaluoValido;
+import mx.peta.inmobiliaapp.validadorWebService.AvaluoValidoJsonResult;
+import mx.peta.inmobiliaapp.validadorWebService.EndPointsInterface;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 import static mx.peta.inmobiliaapp.R.id.btnFin;
 
@@ -74,15 +86,61 @@ public class CapturaCategorias extends AppCompatActivity {
 
             @Override
             public void onClick(View view) {
-                Toast.makeText(getApplicationContext(), "closing the app", Toast.LENGTH_SHORT).show();
-                finishAffinity();
+            // Ya se ha terminado la captura de la información
+            // es necesario llamar al web service para conocer el valor del inmueble
+            final String BASE_URL = "http://valjson.artica.com.mx/";
+                Gson gson = new GsonBuilder()
+                    .setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
+                    .create();
+                Retrofit retrofit = new Retrofit.Builder()
+                    .baseUrl(BASE_URL)
+                    .addConverterFactory(GsonConverterFactory.create(gson))
+                    .build();
+                EndPointsInterface apiService = retrofit.create(EndPointsInterface.class);
+                //tipologia=2
+                //&CP=4318&delegacion=9003&entidad=9&proximidadUrbana=1&claseInmueble=5&vidautil=720&superTerreno=400&superConstruido=400
+                // &valConst=4000000&valConcluido=8000000&revisadoManualmente=0&USER=rayo&PASSWORD=rayo&sensibilidad=3.5
+                Call<AvaluoValido> callApiService = apiService.getAvaluo(
+                        propiedad.getTipologia(),
+                        propiedad.getCP(),
+                        propiedad.getDelegacion() + propiedad.getEntidad() * 1000.0,
+                        propiedad.getEntidad(),
+                        propiedad.getProximidadUrbana(),
+                        propiedad.getClaseInmueble(),
+                        propiedad.getVidaUtil(),
+                        propiedad.getSuperTerreno(),
+                        propiedad.getSuperConstruido(),
+                        propiedad.getValConst(),
+                        propiedad.getValConcluido(),
+                        propiedad.getRevisadoManualment(),
+                        "rayo",
+                        "rayo",
+                        3.5);
+
+                callApiService.enqueue(new Callback<AvaluoValido> (){
+                    @Override
+                    public void onResponse(Call<AvaluoValido> call, Response<AvaluoValido> response) {
+                        Toast.makeText(getApplicationContext(), "Datos del avaluo", Toast.LENGTH_LONG).show();
+                        AvaluoValidoJsonResult res = response.body().getAvaluoValidoJsonResult();
+                        propiedad.setValEstimado(res.getValorEstimado());
+                        Toast.makeText(getApplicationContext(),"Avaluo válido " + res.getAvaluoValido().toString() + "\n " +
+                                "Valor estimado " + res.getValorEstimado().toString() + "\n " +
+                                "DS " + res.getDesStn().toString() + "\n " +
+                                res.getTipoModelo() + "\n " +
+                                res.getErrorStatus(), Toast.LENGTH_LONG).show();
+                    }
+
+                    @Override
+                    public void onFailure(Call<AvaluoValido> call, Throwable t) {
+
+                    }
+                });
+
             }
         });
 
         servicioGPS = new ServicioGPS(getApplicationContext());
-        LatLong latLong = servicioGPS.getLatLong();
-        textViewLatitud.setText(Double.toString(latLong.getLatitud()));
-        textViewLonguitud.setText(Double.toString(latLong.getLongitud()));
+
 
         /* Código que se necesita para tomar la foto */
 
@@ -92,6 +150,8 @@ public class CapturaCategorias extends AppCompatActivity {
 
         if (propiedad.getTakingPhotoState()) {
             setPic(propiedad.getPhotoFileName(), mImageView);
+            textViewLatitud.setText(Double.toString(propiedad.getLatitud()));
+            textViewLonguitud.setText(Double.toString(propiedad.getLongitud()));
         }
 
         mImageView.setOnClickListener(new View.OnClickListener() {
@@ -208,6 +268,9 @@ public class CapturaCategorias extends AppCompatActivity {
                     e.printStackTrace();
                 }
             }
+            LatLong latLong = servicioGPS.getLatLong();
+            propiedad.setLatitud(latLong.getLatitud());
+            propiedad.setLongitud(latLong.getLongitud());
             propiedad.setPhotoFileName(savedBitmap.toString());
 
             // Hay que almacenar el nombre del archivo en SQLite junto con los datos del inmueble

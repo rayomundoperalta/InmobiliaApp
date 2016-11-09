@@ -91,9 +91,13 @@ public class Propiedad {
     public Double getValConcluido() { return this.valConcluido; }
     public void setValConcluido(Double valConcluido) { this.valConcluido = valConcluido; }
 
-    private Double revisadoManualment = 0.0;
-    public Double getRevisadoManualment() { return this.revisadoManualment; }
-    public void set(Double revisadoManualment) { this.revisadoManualment = revisadoManualment; }
+    private Double valEstimado = 0.0;
+    public Double getValEstimado() { return this.valEstimado; }
+    public void setValEstimado(Double valEstimado) { this.valEstimado = valEstimado; }
+
+    private int revisadoManualment = 0;
+    public int getRevisadoManualment() { return this.revisadoManualment; }
+    public void setRevisadoManualment(int revisadoManualment) { this.revisadoManualment = revisadoManualment; }
 
     private Double sensibilidad = 0.0;
     public Double getSensibilidad() { return this.sensibilidad; }
