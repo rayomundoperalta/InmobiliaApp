@@ -32,8 +32,8 @@ public class MapHelper implements OnMapReadyCallback {
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        servicioGPS = new ServicioGPS(getApplicationContext());
-        LatLong latLong = servicioGPS.getLatLong();
+        ServicioGPS gps = ServicioGPS.getInstancia();
+        LatLong latLong = gps.getLatLong();
         LatLng posicionActual = new LatLng(latLong.getLatitud(), latLong.getLongitud());
         // Add a marker in Mexico and move the camera
         // coordenadas de la Ciudad de México 19.3424545,-99.1843678

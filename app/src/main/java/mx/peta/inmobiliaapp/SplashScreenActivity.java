@@ -18,21 +18,27 @@ public class SplashScreenActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash_screen);
-        // We are going to show the splash screen here
-        // and transfer control to Facebook login
-        splashScreen = (ImageView) findViewById(R.id.splashImage);
-        splashScreen.setImageResource(R.drawable.plantaarq);
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                // We transfer the control to the FBLoginActivity to control mx.peta.inmobiliaapp.login
-                Intent intent = new Intent(getApplicationContext(), FacebookLoginActivity.class);
-                startActivity(intent);
-                CatalogoEstadoMunicipio.getInstance(); // Solo queremos que se inicalize la instancia aquí
-                System.out.println("Inmobilia Inicializamos el catalogo durante el splas");
-                finish();
-            }
-        },1000*1);
+        // antes que nada se verifica si tenemos conexion de internet
+        if (InternetConnection.isOnLine()) {
+            // We are going to show the splash screen here
+            // and transfer control to Facebook login
+            splashScreen = (ImageView) findViewById(R.id.splashImage);
+            splashScreen.setImageResource(R.drawable.plantaarq);
+            CatalogoEstadoMunicipio.getInstance(); // Solo queremos que se inicalize la instancia aquí
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    // We transfer the control to the FBLoginActivity to control mx.peta.inmobiliaapp.login
+                    Intent intent = new Intent(getApplicationContext(), FacebookLoginActivity.class);
+                    startActivity(intent);
+                    System.out.println("Inmobilia Inicializamos el catalogo durante el splas");
+                    finish();
+                }
+            },1000*1);
+        } else {
+            Toast.makeText(getApplicationContext(),"No esta conectado a Internet", Toast.LENGTH_LONG).show();
+            finish();
+        }
 
     }
 }

@@ -103,7 +103,7 @@ public class VistaInicial extends AppCompatActivity {
             public void onDrawerClosed(View drawerView) {
                 // Code here will be triggered once the drawer closes as we dont want anything to happen so we leave this blank
                 super.onDrawerClosed(drawerView);
-                Toast.makeText(getApplicationContext(),"cerre la hamburgesa",Toast.LENGTH_LONG).show();
+                System.out.println("Inmobilia cerre la hamburgesa");
             }
 
             @Override
@@ -111,7 +111,7 @@ public class VistaInicial extends AppCompatActivity {
                 // Code here will be triggered once the drawer open as we dont want anything to happen so we leave this blank
 
                 super.onDrawerOpened(drawerView);
-                Toast.makeText(getApplicationContext(),"abri la hamburgesa", Toast.LENGTH_LONG).show();
+                System.out.println("Inmobilia abri la hamburgesa");
             }
         };
 
@@ -130,7 +130,7 @@ public class VistaInicial extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
-        Toast.makeText(getApplicationContext(),"creamos el menu de opciones", Toast.LENGTH_LONG).show();
+        System.out.println("Inmmobilia creamos el menu de opciones");
         return true;
     }
 
@@ -144,7 +144,7 @@ public class VistaInicial extends AppCompatActivity {
         //noinspection SimplifiableIfStatement
         switch (id) {
             case R.id.action_settings:
-                Toast.makeText(getApplicationContext(), "seleccionamos configuracion", Toast.LENGTH_LONG).show();
+                System.out.println("Inmobilia seleccionamos configuracion");
                 return true;
         }
         return super.onOptionsItemSelected(item);

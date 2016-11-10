@@ -16,6 +16,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -24,9 +25,12 @@ import android.widget.Toast;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
 
+import mx.peta.inmobiliaapp.SQL.PropiedadesDataSource;
+import mx.peta.inmobiliaapp.SQL.PropiedadesModelItem;
 import mx.peta.inmobiliaapp.Servicios.LatLong;
 import mx.peta.inmobiliaapp.Servicios.ServicioGPS;
 import mx.peta.inmobiliaapp.validadorWebService.AvaluoValido;
@@ -42,22 +46,21 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-import static mx.peta.inmobiliaapp.R.id.btnFin;
-
 public class CapturaCategorias extends AppCompatActivity {
 
     Propiedad propiedad = Propiedad.getInstance();
     private Spinner spinnerProximidadUrbana;
     private Spinner spinnerTipologia;
     private Spinner spinnerClaseInmueble;
-    private Button btnFoto;
-    private Button btnFin;
+    private Button btnEstimarValor;
+    private Button btnGuardar;
     private ImageView mImageView;
     private TextView textViewLatitud;
     private TextView textViewLonguitud;
+    private EditText editTextDireccion;
+    private EditText editTextTelefono;
 
     private LatLong latLong = new LatLong();
-    ServicioGPS servicioGPS;
 
     File photoFile = null;
     String bitmapFileName = null;
@@ -67,7 +70,12 @@ public class CapturaCategorias extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-
+        if (propiedad.getValEstimado() > 0.0) {
+            DecimalFormat formateador = new DecimalFormat("###,###");
+            TextView textViewEstimacionValor = (TextView) findViewById(R.id.textViewEstimacionValor);
+            textViewEstimacionValor.setText("Valor estimado $" + formateador.format(propiedad.getValEstimado()) + " +- $" +
+                    formateador.format(propiedad.getValDesStn()));
+        }
     }
 
     @Override
@@ -75,35 +83,105 @@ public class CapturaCategorias extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_captura_categorias);
 
+        propiedad.setValEstimado(0.0);
+        propiedad.setValDesStn(0.0);
         System.out.println("Inmobilia onCreate CapturaCategorias");
         mImageView = (ImageView) findViewById(R.id.imageViewPropiedad);
         mImageView.setClickable(true);
         textViewLatitud = (TextView) findViewById(R.id.textViewLat);
         textViewLonguitud = (TextView) findViewById(R.id.textViewLong);
 
-        btnFin = (Button) findViewById(R.id.btnFin);
-        btnFin.setOnClickListener(new View.OnClickListener() {
+        editTextDireccion = (EditText) findViewById(R.id.editTextDireccion);
 
+        editTextTelefono  = (EditText) findViewById(R.id.editTextTelefono);
+
+        btnEstimarValor = (Button) findViewById(R.id.btnEstimarValor);
+        btnEstimarValor.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
             // Ya se ha terminado la captura de la información
             // es necesario llamar al web service para conocer el valor del inmueble
             final String BASE_URL = "http://valjson.artica.com.mx/";
-                Gson gson = new GsonBuilder()
-                    .setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
-                    .create();
-                Retrofit retrofit = new Retrofit.Builder()
-                    .baseUrl(BASE_URL)
-                    .addConverterFactory(GsonConverterFactory.create(gson))
-                    .build();
-                EndPointsInterface apiService = retrofit.create(EndPointsInterface.class);
-                //tipologia=2
-                //&CP=4318&delegacion=9003&entidad=9&proximidadUrbana=1&claseInmueble=5&vidautil=720&superTerreno=400&superConstruido=400
-                // &valConst=4000000&valConcluido=8000000&revisadoManualmente=0&USER=rayo&PASSWORD=rayo&sensibilidad=3.5
-                Call<AvaluoValido> callApiService = apiService.getAvaluo(
+                if (propiedad.getValEstimado() == 0.0) {
+                    Gson gson = new GsonBuilder()
+                            .setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
+                            .create();
+                    Retrofit retrofit = new Retrofit.Builder()
+                            .baseUrl(BASE_URL)
+                            .addConverterFactory(GsonConverterFactory.create(gson))
+                            .build();
+                    EndPointsInterface apiService = retrofit.create(EndPointsInterface.class);
+                    //tipologia=2
+                    //&CP=4318&delegacion=9003&entidad=9&proximidadUrbana=1&claseInmueble=5&vidautil=720&superTerreno=400&superConstruido=400
+                    // &valConst=4000000&valConcluido=8000000&revisadoManualmente=0&USER=rayo&PASSWORD=rayo&sensibilidad=3.5
+                    Call<AvaluoValido> callApiService = apiService.getAvaluo(
+                            propiedad.getTipologia(),
+                            propiedad.getCP(),
+                            propiedad.getDelegacion() + propiedad.getEntidad() * 1000.0,
+                            propiedad.getEntidad(),
+                            propiedad.getProximidadUrbana(),
+                            propiedad.getClaseInmueble(),
+                            propiedad.getVidaUtil(),
+                            propiedad.getSuperTerreno(),
+                            propiedad.getSuperConstruido(),
+                            propiedad.getValConst(),
+                            propiedad.getValConcluido(),
+                            propiedad.getRevisadoManualment(),
+                            "rayo",
+                            "rayo",
+                            3.5);
+                    callApiService.enqueue(new Callback<AvaluoValido>() {
+                        @Override
+                        public void onResponse(Call<AvaluoValido> call, Response<AvaluoValido> response) {
+                            AvaluoValidoJsonResult res = response.body().getAvaluoValidoJsonResult();
+                            propiedad.setValEstimado(res.getValorEstimado());
+                            propiedad.setValDesStn(res.getDesStn());
+                            DecimalFormat formateador = new DecimalFormat("###,###");
+                            TextView textViewEstimacionValor = (TextView) findViewById(R.id.textViewEstimacionValor);
+                            textViewEstimacionValor.setText("Valor estimado $" + formateador.format(res.getValorEstimado()) + " +- $" +
+                                    formateador.format(res.getDesStn()));
+                            //Toast.makeText(getApplicationContext(),"Avaluo válido " + res.getAvaluoValido().toString() + "\n " +
+                            //        "Valor estimado " + res.getValorEstimado().toString() + "\n " +
+                            //        "DS " + res.getDesStn().toString() + "\n " +
+                            //        res.getTipoModelo() + "\n " +
+                            //        res.getErrorStatus(), Toast.LENGTH_LONG).show();
+                        }
+
+                        @Override
+                        public void onFailure(Call<AvaluoValido> call, Throwable t) {
+
+                        }
+                    });
+                } else {
+                    DecimalFormat formateador = new DecimalFormat("###,###");
+                    TextView textViewEstimacionValor = (TextView) findViewById(R.id.textViewEstimacionValor);
+                    textViewEstimacionValor.setText("Valor estimado $" + formateador.format(propiedad.getValEstimado()) + " +- $" +
+                            formateador.format(propiedad.getValDesStn()));
+                }
+
+            }
+        });
+
+        btnGuardar = (Button) findViewById(R.id.btnGuardar);
+
+        btnGuardar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                PropiedadesDataSource ds = new PropiedadesDataSource(getApplicationContext());
+                propiedad.setDireccion(editTextDireccion.getText().toString());
+                propiedad.setTelefono(editTextTelefono.getText().toString());
+                // Ya se capturo la información y hay que almacenarla en la base de datos
+                // los datos que hay que almacenar estan en la singleton propiedad
+                // al final hay que brincar a la actividad con el mapa
+                PropiedadesModelItem modelItem = new PropiedadesModelItem(
+                        propiedad.getTelefono(),
+                        propiedad.getDireccion(),
+                        propiedad.getLatitud(),
+                        propiedad.getLongitud(),
+                        propiedad.getPhotoFileName(),
                         propiedad.getTipologia(),
                         propiedad.getCP(),
-                        propiedad.getDelegacion() + propiedad.getEntidad() * 1000.0,
+                        propiedad.getDelegacion(),
                         propiedad.getEntidad(),
                         propiedad.getProximidadUrbana(),
                         propiedad.getClaseInmueble(),
@@ -112,35 +190,14 @@ public class CapturaCategorias extends AppCompatActivity {
                         propiedad.getSuperConstruido(),
                         propiedad.getValConst(),
                         propiedad.getValConcluido(),
+                        propiedad.getValEstimado(),
+                        propiedad.getValDesStn(),
                         propiedad.getRevisadoManualment(),
-                        "rayo",
-                        "rayo",
-                        3.5);
-
-                callApiService.enqueue(new Callback<AvaluoValido> (){
-                    @Override
-                    public void onResponse(Call<AvaluoValido> call, Response<AvaluoValido> response) {
-                        Toast.makeText(getApplicationContext(), "Datos del avaluo", Toast.LENGTH_LONG).show();
-                        AvaluoValidoJsonResult res = response.body().getAvaluoValidoJsonResult();
-                        propiedad.setValEstimado(res.getValorEstimado());
-                        Toast.makeText(getApplicationContext(),"Avaluo válido " + res.getAvaluoValido().toString() + "\n " +
-                                "Valor estimado " + res.getValorEstimado().toString() + "\n " +
-                                "DS " + res.getDesStn().toString() + "\n " +
-                                res.getTipoModelo() + "\n " +
-                                res.getErrorStatus(), Toast.LENGTH_LONG).show();
-                    }
-
-                    @Override
-                    public void onFailure(Call<AvaluoValido> call, Throwable t) {
-
-                    }
-                });
-
+                        propiedad.getSensibilidad());
+                ds.writeRegistro(modelItem);
+                
             }
         });
-
-        servicioGPS = new ServicioGPS(getApplicationContext());
-
 
         /* Código que se necesita para tomar la foto */
 
@@ -268,7 +325,8 @@ public class CapturaCategorias extends AppCompatActivity {
                     e.printStackTrace();
                 }
             }
-            LatLong latLong = servicioGPS.getLatLong();
+            ServicioGPS gps = ServicioGPS.getInstancia();
+            LatLong latLong = gps.getLatLong();
             propiedad.setLatitud(latLong.getLatitud());
             propiedad.setLongitud(latLong.getLongitud());
             propiedad.setPhotoFileName(savedBitmap.toString());

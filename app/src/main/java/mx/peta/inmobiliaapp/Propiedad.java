@@ -17,6 +17,13 @@ public class Propiedad {
     }
 
 
+    private String telefono;
+    public String getTelefono() { return this.telefono; }
+    public void setTelefono(String telefono) { this.telefono = telefono; }
+
+    private String direccion;
+    public String getDireccion() { return this.direccion; }
+    public void setDireccion(String direccion) { this.direccion = direccion; }
 
     private double latitud = 0.0;
     public double getLatitud() { return this.latitud; }
@@ -94,6 +101,10 @@ public class Propiedad {
     private Double valEstimado = 0.0;
     public Double getValEstimado() { return this.valEstimado; }
     public void setValEstimado(Double valEstimado) { this.valEstimado = valEstimado; }
+
+    private Double valDesStn = 0.0;
+    public Double getValDesStn() { return this.valDesStn; }
+    public void setValDesStn(Double valDesStn) { this.valDesStn = valDesStn; }
 
     private int revisadoManualment = 0;
     public int getRevisadoManualment() { return this.revisadoManualment; }

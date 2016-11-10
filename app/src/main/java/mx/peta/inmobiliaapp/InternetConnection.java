@@ -21,7 +21,7 @@ import java.net.UnknownHostException;
  * Created by rayo on 9/17/16.
  */
 public class InternetConnection {
-    public boolean isNetworkAvailable(Context context) {
+    public static boolean isNetworkAvailable(Context context) {
         ConnectivityManager connectivityManager
                 = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
@@ -33,7 +33,7 @@ public class InternetConnection {
         No se puede usar el comando ping desde eestas rutinas porque no
         logra hacer la noneccion a internet
      */
-    public String Executer(String command) {
+    public static String Executer(String command) {
         StringBuffer output = new StringBuffer();
         Process p;
         try {
@@ -52,7 +52,7 @@ public class InternetConnection {
         return response;
     }
 
-    public boolean isOnLine() {
+    public static boolean isOnLine() {
 
         //Runtime runtime = Runtime.getRuntime();
         try {
@@ -68,7 +68,7 @@ public class InternetConnection {
         return false;
     }
 
-    public int estoyEnInternet() {
+    public static int estoyEnInternet() {
         InetAddress addr = null;
         try {
             addr = InetAddress.getByName("8.8.8.8");
