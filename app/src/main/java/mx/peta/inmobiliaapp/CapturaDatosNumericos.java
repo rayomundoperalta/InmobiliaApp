@@ -68,6 +68,7 @@ public class CapturaDatosNumericos extends AppCompatActivity {
                     } else {
                         Toast.makeText(getApplicationContext(),"Se deben introducir todos los valores, no se aceptan ceros",Toast.LENGTH_LONG).show();
                     }
+                    finish();
                 }
             });
 

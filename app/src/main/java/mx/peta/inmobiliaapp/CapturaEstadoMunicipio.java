@@ -106,6 +106,7 @@ public class CapturaEstadoMunicipio extends AppCompatActivity {
                 propiedad.setDelegacion(m);
                 Intent intent = new Intent(getApplicationContext(), CapturaDatosNumericos.class);
                 startActivity(intent);
+                finish();
                 return false;
             }
         });

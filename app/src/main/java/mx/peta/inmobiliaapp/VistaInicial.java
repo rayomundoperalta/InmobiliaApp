@@ -12,18 +12,34 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
-public class VistaInicial extends AppCompatActivity {
+import java.util.List;
+
+import mx.peta.inmobiliaapp.SQL.PropiedadesDataSource;
+import mx.peta.inmobiliaapp.SQL.PropiedadesModelItem;
+import mx.peta.inmobiliaapp.SQL.PropiedadesSqLiteHelper;
+import mx.peta.inmobiliaapp.Servicios.LatLong;
+import mx.peta.inmobiliaapp.Servicios.ServicioGPS;
+
+import static mx.peta.inmobiliaapp.SQL.PropiedadesDataSource.getAllItems;
+
+public class VistaInicial extends AppCompatActivity implements OnMapReadyCallback {
 
     //Defining Variables
     private Toolbar toolbar;
     private NavigationView navigationView;
     private DrawerLayout drawerLayout;
     private Propiedad propiedad = Propiedad.getInstance();
+    private GoogleMap mMap;
 
     SupportMapFragment mapFragment;
-    private MapHelper mapHelper = MapHelper.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -123,7 +139,7 @@ public class VistaInicial extends AppCompatActivity {
 
 
 
-        mapFragment.getMapAsync(mapHelper);
+        mapFragment.getMapAsync(this);
     }
 
     @Override
@@ -148,5 +164,50 @@ public class VistaInicial extends AppCompatActivity {
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        mMap = googleMap;
+
+        PropiedadesDataSource ds = new PropiedadesDataSource(getApplicationContext());
+        int cuantosRegistros = ds.cuantosRegistros(PropiedadesSqLiteHelper.APP_TABLE_NAME);
+        if (cuantosRegistros == 0) {
+            // si no hay registros en la base de datos mostramos la posición del celular
+            ServicioGPS gps = ServicioGPS.getInstancia();
+            LatLong latLong = gps.getLatLong();
+            if (latLong == null)
+                System.out.println("Inmobilia no hemos podido recuperar la posición");
+            LatLng posicionActual = new LatLng(latLong.getLatitud(), latLong.getLongitud());
+            // Add a marker in Mexico and move the camera
+            // coordenadas de la Ciudad de México 19.3424545,-99.1843678
+            mMap.addMarker(new MarkerOptions().position(posicionActual).title("Tuera 55").snippet("R$35,000 V$8,000,000"));
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(posicionActual));
+            CameraPosition cameraPosition = CameraPosition.builder()
+                    .target(posicionActual)
+                    .zoom(15)
+                    .bearing(0)
+                    .build();
+
+            // Animate the change in camera view over 2 seconds
+            mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition),
+                    2000, null);
+        } else {
+            List<PropiedadesModelItem> listaPropiedades = getAllItems();
+            for (PropiedadesModelItem item:listaPropiedades) {
+                LatLng pos = new LatLng(item.latitud, item.longitud);
+                mMap.addMarker(new MarkerOptions().position(pos).title(item.direccion).snippet(item.telefono));
+                mMap.moveCamera(CameraUpdateFactory.newLatLng(pos));
+                CameraPosition cameraPosition = CameraPosition.builder()
+                        .target(pos)
+                        .zoom(15)
+                        .bearing(0)
+                        .build();
+
+                // Animate the change in camera view over 2 seconds
+                mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition),
+                        2000, null);
+            }
+        }
     }
 }

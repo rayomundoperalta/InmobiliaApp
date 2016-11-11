@@ -195,7 +195,7 @@ public class CapturaCategorias extends AppCompatActivity {
                         propiedad.getRevisadoManualment(),
                         propiedad.getSensibilidad());
                 ds.writeRegistro(modelItem);
-                
+                finish();
             }
         });
 
