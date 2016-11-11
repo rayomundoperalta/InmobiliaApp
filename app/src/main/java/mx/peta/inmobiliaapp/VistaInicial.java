@@ -1,6 +1,7 @@
 package mx.peta.inmobiliaapp;
 
 import android.content.Intent;
+import android.os.Handler;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -18,6 +19,8 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.List;
@@ -27,6 +30,7 @@ import mx.peta.inmobiliaapp.SQL.PropiedadesModelItem;
 import mx.peta.inmobiliaapp.SQL.PropiedadesSqLiteHelper;
 import mx.peta.inmobiliaapp.Servicios.LatLong;
 import mx.peta.inmobiliaapp.Servicios.ServicioGPS;
+import mx.peta.inmobiliaapp.login.FacebookLoginActivity;
 
 import static mx.peta.inmobiliaapp.SQL.PropiedadesDataSource.getAllItems;
 
@@ -137,8 +141,6 @@ public class VistaInicial extends AppCompatActivity implements OnMapReadyCallbac
         //calling sync state is necessay or else your hamburger icon wont show up
         actionBarDrawerToggle.syncState();
 
-
-
         mapFragment.getMapAsync(this);
     }
 
@@ -170,6 +172,23 @@ public class VistaInicial extends AppCompatActivity implements OnMapReadyCallbac
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
+        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                marker.showInfoWindow();
+                System.out.println("Inmobilia detectamos el click en el marcador de mapa: " + marker.getId() + " " + marker.getTag());
+                // just delay a little bit in orden to let read the info window
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        Intent intent = new Intent(getApplicationContext(), VerDetallePropiedad.class);
+                        startActivity(intent);
+                    }
+                },1000*3);
+                return true;
+            }
+        });
+
         PropiedadesDataSource ds = new PropiedadesDataSource(getApplicationContext());
         int cuantosRegistros = ds.cuantosRegistros(PropiedadesSqLiteHelper.APP_TABLE_NAME);
         if (cuantosRegistros == 0) {
@@ -194,9 +213,11 @@ public class VistaInicial extends AppCompatActivity implements OnMapReadyCallbac
                     2000, null);
         } else {
             List<PropiedadesModelItem> listaPropiedades = getAllItems();
+            LatLngBounds.Builder boundsBuilder = new LatLngBounds.Builder();
             for (PropiedadesModelItem item:listaPropiedades) {
                 LatLng pos = new LatLng(item.latitud, item.longitud);
-                mMap.addMarker(new MarkerOptions().position(pos).title(item.direccion).snippet(item.telefono));
+                mMap.addMarker(new MarkerOptions().position(pos).title(item.direccion).snippet(item.telefono)).setTag(item.id);
+                /*
                 mMap.moveCamera(CameraUpdateFactory.newLatLng(pos));
                 CameraPosition cameraPosition = CameraPosition.builder()
                         .target(pos)
@@ -207,7 +228,34 @@ public class VistaInicial extends AppCompatActivity implements OnMapReadyCallbac
                 // Animate the change in camera view over 2 seconds
                 mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition),
                         2000, null);
+                */
+                boundsBuilder.include(pos);
             }
+            LatLngBounds bounds = boundsBuilder.build();
+            CameraPosition cameraPosition = CameraPosition.builder()
+                    .target(bounds.getCenter())
+                    .bearing(0)
+                    .build();
+            mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+            mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 50));
         }
     }
 }
+
+
+/*
+            LatLngBounds bounds = new LatLngBounds.Builder()
+                 .include(Leicester_Square)
+                 .include(Covent_Garden)
+                 .include(Piccadilly_Circus)
+                 .include(Embankment)
+                 .include(Charing_Cross)
+                 .build();
+
+                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
+                  mapView.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+                 } else {
+                  mapView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                 }
+                 myMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 50));
+ */

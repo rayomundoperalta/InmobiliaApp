@@ -69,13 +69,16 @@
             android:theme="@style/Theme.AppCompat.NoActionBar" />
         <activity android:name=".CapturaEstadoMunicipio" />
         <activity android:name=".CapturaDatosNumericos" />
-        <activity android:name=".CapturaCategorias"
-            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".CapturaCategorias"
+            android:screenOrientation="portrait" />
 
         <service
             android:name=".Servicios.ServicioGPS"
             android:enabled="true"
-            android:exported="true"></service>
+            android:exported="true" />
+
+        <activity android:name=".VerDetallePropiedad"></activity>
     </application>
 
 </manifest>
