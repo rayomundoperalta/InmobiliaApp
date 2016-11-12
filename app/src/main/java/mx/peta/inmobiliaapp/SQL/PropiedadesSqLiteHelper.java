@@ -12,7 +12,7 @@ public class PropiedadesSqLiteHelper extends SQLiteOpenHelper {
     private final static String APP_DATABASE_NAME            = "inmobiliaapp_db";
     private final static int    APP_DATABASE_VERSION         = 1;
     public static final String  APP_TABLE_NAME               = "propiedades_table";
-    public static final String  APP_COLUMN_ID                = BaseColumns._ID;
+    public static final String  APP_COLUM_ID                = BaseColumns._ID;
     public static final String  APP_COLUM_TELEFONO           = "telefono";
     public static final String  APP_COLUM_DIRECCION          = "direccion";
     public static final String  APP_COLUM_LATITUD            = "latitud";
@@ -35,7 +35,7 @@ public class PropiedadesSqLiteHelper extends SQLiteOpenHelper {
     public static final String  APP_COLUM_SENSIBILIDAD       = "sensibilidad";
 
     private static final String CREATE_PROPIEDADES_TABLE   = "create table " + APP_TABLE_NAME + " (" +
-            APP_COLUMN_ID +              " integer primary key autoincrement, " +
+            APP_COLUM_ID +              " integer primary key autoincrement, " +
             APP_COLUM_TELEFONO +         " text no null, " +
             APP_COLUM_DIRECCION +        " text no null, " +
             APP_COLUM_LATITUD +          " double, " +

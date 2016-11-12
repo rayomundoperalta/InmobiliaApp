@@ -11,6 +11,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -172,11 +174,45 @@ public class VistaInicial extends AppCompatActivity implements OnMapReadyCallbac
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
+        mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+            @Override
+            public void onInfoWindowClick(Marker marker) {
+                System.out.println("Inmobilia click del info window " + marker.getId() + " " + marker.getTag());
+                Intent intent = new Intent(getApplicationContext(), VerDetallePropiedad.class);
+                startActivity(intent);
+            }
+        });
+
+        mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
+            @Override
+            public View getInfoWindow(Marker marker) {
+                System.out.println("Inmobilia getInfoWindow");
+                return null;
+            }
+
+            @Override
+            public View getInfoContents(Marker marker) {
+                System.out.println("Inmobilia getInfoContents");
+                PropiedadesDataSource ds = new PropiedadesDataSource(getApplicationContext());
+                PropiedadesModelItem modelItem = ds.getRegistro((int) marker.getTag());
+                View view = getLayoutInflater().inflate(R.layout.info_window_propiedad, null);
+                ImageView imageView = (ImageView) view.findViewById(R.id.infoWindowImage);
+                TextView textViewTitle = (TextView) view.findViewById(R.id.infoWindowsTitle);
+                TextView textViewSnippet = (TextView) view.findViewById(R.id.infoWindowSnippet);
+
+                textViewTitle.setText(modelItem.direccion);
+                textViewSnippet.setText(modelItem.telefono);
+                return view;
+            }
+        });
+
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
                 marker.showInfoWindow();
                 System.out.println("Inmobilia detectamos el click en el marcador de mapa: " + marker.getId() + " " + marker.getTag());
+                return true;
+                /*
                 // just delay a little bit in orden to let read the info window
                 new Handler().postDelayed(new Runnable() {
                     @Override
@@ -186,6 +222,7 @@ public class VistaInicial extends AppCompatActivity implements OnMapReadyCallbac
                     }
                 },1000*3);
                 return true;
+                */
             }
         });
 
@@ -200,7 +237,7 @@ public class VistaInicial extends AppCompatActivity implements OnMapReadyCallbac
             LatLng posicionActual = new LatLng(latLong.getLatitud(), latLong.getLongitud());
             // Add a marker in Mexico and move the camera
             // coordenadas de la Ciudad de México 19.3424545,-99.1843678
-            mMap.addMarker(new MarkerOptions().position(posicionActual).title("Tuera 55").snippet("R$35,000 V$8,000,000"));
+            mMap.addMarker(new MarkerOptions().position(posicionActual).title("Usd. está aqui").snippet("A dónde quiere ir hoy"));
             mMap.moveCamera(CameraUpdateFactory.newLatLng(posicionActual));
             CameraPosition cameraPosition = CameraPosition.builder()
                     .target(posicionActual)
@@ -217,18 +254,6 @@ public class VistaInicial extends AppCompatActivity implements OnMapReadyCallbac
             for (PropiedadesModelItem item:listaPropiedades) {
                 LatLng pos = new LatLng(item.latitud, item.longitud);
                 mMap.addMarker(new MarkerOptions().position(pos).title(item.direccion).snippet(item.telefono)).setTag(item.id);
-                /*
-                mMap.moveCamera(CameraUpdateFactory.newLatLng(pos));
-                CameraPosition cameraPosition = CameraPosition.builder()
-                        .target(pos)
-                        .zoom(15)
-                        .bearing(0)
-                        .build();
-
-                // Animate the change in camera view over 2 seconds
-                mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition),
-                        2000, null);
-                */
                 boundsBuilder.include(pos);
             }
             LatLngBounds bounds = boundsBuilder.build();
@@ -242,6 +267,18 @@ public class VistaInicial extends AppCompatActivity implements OnMapReadyCallbac
     }
 }
 
+/*
+                mMap.moveCamera(CameraUpdateFactory.newLatLng(pos));
+                CameraPosition cameraPosition = CameraPosition.builder()
+                        .target(pos)
+                        .zoom(15)
+                        .bearing(0)
+                        .build();
+
+                // Animate the change in camera view over 2 seconds
+                mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition),
+                        2000, null);
+*/
 
 /*
             LatLngBounds bounds = new LatLngBounds.Builder()

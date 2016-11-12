@@ -127,6 +127,7 @@ public class ServicioGPS extends Service implements LocationListener {
             } else {
                 latitud = location.getLatitude();
                 longitud = location.getLongitude();
+                System.out.println("Inmobilia latitud:" + latitud + " longitud:" + longitud);
             }
         }
     }

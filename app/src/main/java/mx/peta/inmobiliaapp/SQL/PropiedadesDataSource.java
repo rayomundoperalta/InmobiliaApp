@@ -34,7 +34,7 @@ public class PropiedadesDataSource {
     }
 
     public static void deleteRegistro(PropiedadesModelItem modelItem) {
-        db.delete(PropiedadesSqLiteHelper.APP_TABLE_NAME,PropiedadesSqLiteHelper.APP_COLUMN_ID + " =? ",
+        db.delete(PropiedadesSqLiteHelper.APP_TABLE_NAME,PropiedadesSqLiteHelper.APP_COLUM_ID + " =? ",
                 new String[]{String.valueOf(modelItem.id)});
     }
 
@@ -75,9 +75,9 @@ public class PropiedadesDataSource {
         si no se encuentra al usuario hay que regresar null
         El query debe ser: select password from table where User = user
      */
-    public PropiedadesModelItem getRegistro(String appName) {
+    public PropiedadesModelItem getRegistro(int id) {
         String QUERY = "select " +
-                PropiedadesSqLiteHelper.APP_COLUMN_ID            + ", " +
+                PropiedadesSqLiteHelper.APP_COLUM_ID            + ", " +
                 PropiedadesSqLiteHelper.APP_COLUM_TELEFONO + ", " +
                 PropiedadesSqLiteHelper.APP_COLUM_DIRECCION + ", " +
                 PropiedadesSqLiteHelper.APP_COLUM_LATITUD + ", " +
@@ -98,10 +98,10 @@ public class PropiedadesDataSource {
                 PropiedadesSqLiteHelper.APP_COLUM_VALDESSTN + ", " +
                 PropiedadesSqLiteHelper.APP_COLUM_REVISADOMANUALMENT + ", " +
                 PropiedadesSqLiteHelper.APP_COLUM_SENSIBILIDAD +
-                " from " + PropiedadesSqLiteHelper.APP_TABLE_NAME + " where " + PropiedadesSqLiteHelper.APP_COLUM_TELEFONO +
+                " from " + PropiedadesSqLiteHelper.APP_TABLE_NAME + " where " + PropiedadesSqLiteHelper.APP_COLUM_ID +
                 " = ?";
-        // rawQuery("SELECT id, name FROM people WHERE name = ? AND id = ?", new String[] {"David", "2"});
-        Cursor cursor = db.rawQuery(QUERY, new String[] {appName});
+        // db.rawQuery("SELECT id, name FROM people WHERE name = ? AND id = ?", new String[] {"David", "2"});
+        Cursor cursor = db.rawQuery(QUERY, new String[] {Integer.toString(id)});
         if (cursor.moveToFirst()) {
             PropiedadesModelItem modelItem = new PropiedadesModelItem(
                     cursor.getString(cursor.getColumnIndexOrThrow(PropiedadesSqLiteHelper.APP_COLUM_TELEFONO)),
@@ -124,7 +124,7 @@ public class PropiedadesDataSource {
                     cursor.getDouble(cursor.getColumnIndexOrThrow(PropiedadesSqLiteHelper.APP_COLUM_VALDESSTN)),
                     cursor.getInt(cursor.getColumnIndexOrThrow(PropiedadesSqLiteHelper.APP_COLUM_REVISADOMANUALMENT)),
                     cursor.getDouble(cursor.getColumnIndexOrThrow(PropiedadesSqLiteHelper.APP_COLUM_SENSIBILIDAD)));
-            modelItem.id = cursor.getInt(cursor.getColumnIndexOrThrow(PropiedadesSqLiteHelper.APP_COLUMN_ID));
+            modelItem.id = cursor.getInt(cursor.getColumnIndexOrThrow(PropiedadesSqLiteHelper.APP_COLUM_ID));
             cursor.close();
             return modelItem;
         } else
@@ -164,7 +164,7 @@ public class PropiedadesDataSource {
                 PropiedadesSqLiteHelper.APP_COLUM_VALDESSTN             + " = '" + modelItem.valDesStn + "'," +
                 PropiedadesSqLiteHelper.APP_COLUM_REVISADOMANUALMENT    + " = '" + modelItem.revisadoManualment + "'," +
                 PropiedadesSqLiteHelper.APP_COLUM_SENSIBILIDAD          + " = '" + modelItem.sensibilidad + "' " +
-                " where " + PropiedadesSqLiteHelper.APP_COLUMN_ID  + " = " + String.valueOf(modelItem.id);
+                " where " + PropiedadesSqLiteHelper.APP_COLUM_ID  + " = " + String.valueOf(modelItem.id);
         System.out.println("Inmovilia " + QUERY);
         db.execSQL(QUERY);
     }
@@ -196,7 +196,7 @@ public class PropiedadesDataSource {
                     cursor.getDouble(cursor.getColumnIndexOrThrow(PropiedadesSqLiteHelper.APP_COLUM_VALDESSTN)),
                     cursor.getInt(cursor.getColumnIndexOrThrow(PropiedadesSqLiteHelper.APP_COLUM_REVISADOMANUALMENT)),
                     cursor.getDouble(cursor.getColumnIndexOrThrow(PropiedadesSqLiteHelper.APP_COLUM_SENSIBILIDAD)));
-            modelItem.id = cursor.getInt(cursor.getColumnIndexOrThrow(PropiedadesSqLiteHelper.APP_COLUMN_ID));
+            modelItem.id = cursor.getInt(cursor.getColumnIndexOrThrow(PropiedadesSqLiteHelper.APP_COLUM_ID));
             modelItemList.add(modelItem);
         }
         cursor.close();
