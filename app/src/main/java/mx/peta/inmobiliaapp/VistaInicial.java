@@ -1,6 +1,8 @@
 package mx.peta.inmobiliaapp;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Handler;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
@@ -43,24 +45,36 @@ public class VistaInicial extends AppCompatActivity implements OnMapReadyCallbac
     private NavigationView navigationView;
     private DrawerLayout drawerLayout;
     private Propiedad propiedad = Propiedad.getInstance();
-    private GoogleMap mMap;
+    private GoogleMap mMap = null;
 
     SupportMapFragment mapFragment;
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        System.out.println("Inmobilia Vista Inicial onResume()");
+
+        // Inicializamos el registro propiedad
+        propiedad.setTakingPhotoState(false);
+        if (mMap != null) mMap.clear();
+
+        mapFragment.getMapAsync(this);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_vista_inicial);
+        System.out.println("Inmobilia Vista Inicial onCreate()");
 
         // Initializing Toolbar and setting it as the actionbar
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        // Inicializamos el registro propiedad
-        propiedad.setTakingPhotoState(false);
-
         //Initializing NavigationView
         navigationView = (NavigationView) findViewById(R.id.navigation_view);
+
+        // Se dibuja el mapa
         mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
 
@@ -143,7 +157,7 @@ public class VistaInicial extends AppCompatActivity implements OnMapReadyCallbac
         //calling sync state is necessay or else your hamburger icon wont show up
         actionBarDrawerToggle.syncState();
 
-        mapFragment.getMapAsync(this);
+
     }
 
     @Override
@@ -174,12 +188,16 @@ public class VistaInicial extends AppCompatActivity implements OnMapReadyCallbac
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
+        System.out.println("Inmobilia Vista inicial onMapReady()");
         mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
             @Override
             public void onInfoWindowClick(Marker marker) {
-                System.out.println("Inmobilia click del info window " + marker.getId() + " " + marker.getTag());
-                Intent intent = new Intent(getApplicationContext(), VerDetallePropiedad.class);
-                startActivity(intent);
+                if ((int) marker.getTag() > 0) {
+                    System.out.println("Inmobilia click del info window " + marker.getId() + " " + marker.getTag());
+                    Intent intent = new Intent(getApplicationContext(), VerDetallePropiedad.class);
+                    intent.putExtra("MARKER_TAG", (int) marker.getTag());
+                    startActivity(intent);
+                }
             }
         });
 
@@ -192,17 +210,38 @@ public class VistaInicial extends AppCompatActivity implements OnMapReadyCallbac
 
             @Override
             public View getInfoContents(Marker marker) {
-                System.out.println("Inmobilia getInfoContents");
-                PropiedadesDataSource ds = new PropiedadesDataSource(getApplicationContext());
-                PropiedadesModelItem modelItem = ds.getRegistro((int) marker.getTag());
-                View view = getLayoutInflater().inflate(R.layout.info_window_propiedad, null);
-                ImageView imageView = (ImageView) view.findViewById(R.id.infoWindowImage);
-                TextView textViewTitle = (TextView) view.findViewById(R.id.infoWindowsTitle);
-                TextView textViewSnippet = (TextView) view.findViewById(R.id.infoWindowSnippet);
+                System.out.println("Inmobilia getInfoContents" + marker.getTag());
+                if ((int) marker.getTag()  > 0) {
+                    PropiedadesDataSource ds = new PropiedadesDataSource(getApplicationContext());
+                    PropiedadesModelItem modelItem = ds.getRegistro((int) marker.getTag());
+                    View view = getLayoutInflater().inflate(R.layout.info_window_propiedad, null);
+                    ImageView imageView = (ImageView) view.findViewById(R.id.infoWindowImage);
+                    TextView textViewTitle = (TextView) view.findViewById(R.id.infoWindowsTitle);
+                    TextView textViewSnippet = (TextView) view.findViewById(R.id.infoWindowSnippet);
 
-                textViewTitle.setText(modelItem.direccion);
-                textViewSnippet.setText(modelItem.telefono);
-                return view;
+                    BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+                    bmOptions.inJustDecodeBounds = true;
+                    BitmapFactory.decodeFile(modelItem.photoFileName, bmOptions);
+                    int photoW = bmOptions.outWidth;
+                    int photoH = bmOptions.outHeight;
+
+                    // Determine how much to scale down the image
+                    int scaleFactor = Math.min(photoW / 100, photoH / 100);
+
+                    // Decode the image file into a Bitmap sized to fill the View
+                    bmOptions.inJustDecodeBounds = false;
+                    bmOptions.inSampleSize = scaleFactor;
+                    bmOptions.inPurgeable = true;
+
+                    Bitmap bitmap = BitmapFactory.decodeFile(modelItem.photoFileName, bmOptions);
+                    imageView.setImageBitmap(bitmap);
+
+                    textViewTitle.setText(modelItem.direccion);
+                    textViewSnippet.setText(modelItem.telefono);
+                    return view;
+                } else {
+                    return null;
+                }
             }
         });
 
@@ -228,6 +267,7 @@ public class VistaInicial extends AppCompatActivity implements OnMapReadyCallbac
 
         PropiedadesDataSource ds = new PropiedadesDataSource(getApplicationContext());
         int cuantosRegistros = ds.cuantosRegistros(PropiedadesSqLiteHelper.APP_TABLE_NAME);
+        System.out.println("Inmobilia registros en la base de datos -> > " + cuantosRegistros);
         if (cuantosRegistros == 0) {
             // si no hay registros en la base de datos mostramos la posición del celular
             ServicioGPS gps = ServicioGPS.getInstancia();
@@ -237,7 +277,7 @@ public class VistaInicial extends AppCompatActivity implements OnMapReadyCallbac
             LatLng posicionActual = new LatLng(latLong.getLatitud(), latLong.getLongitud());
             // Add a marker in Mexico and move the camera
             // coordenadas de la Ciudad de México 19.3424545,-99.1843678
-            mMap.addMarker(new MarkerOptions().position(posicionActual).title("Usd. está aqui").snippet("A dónde quiere ir hoy"));
+            mMap.addMarker(new MarkerOptions().position(posicionActual).title("Usd. está aqui").snippet("A dónde quiere ir hoy")).setTag(0);
             mMap.moveCamera(CameraUpdateFactory.newLatLng(posicionActual));
             CameraPosition cameraPosition = CameraPosition.builder()
                     .target(posicionActual)
@@ -249,20 +289,31 @@ public class VistaInicial extends AppCompatActivity implements OnMapReadyCallbac
             mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition),
                     2000, null);
         } else {
+            System.out.println("Inmobilia tenemos registros en la base de datos");
             List<PropiedadesModelItem> listaPropiedades = getAllItems();
             LatLngBounds.Builder boundsBuilder = new LatLngBounds.Builder();
             for (PropiedadesModelItem item:listaPropiedades) {
                 LatLng pos = new LatLng(item.latitud, item.longitud);
+                System.out.println(pos.toString());
                 mMap.addMarker(new MarkerOptions().position(pos).title(item.direccion).snippet(item.telefono)).setTag(item.id);
                 boundsBuilder.include(pos);
             }
             LatLngBounds bounds = boundsBuilder.build();
-            CameraPosition cameraPosition = CameraPosition.builder()
-                    .target(bounds.getCenter())
-                    .bearing(0)
-                    .build();
-            mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-            mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 50));
+            if (cuantosRegistros == 1) {
+                CameraPosition cameraPosition = CameraPosition.builder()
+                        .target(bounds.getCenter())
+                        .zoom(15)
+                        .bearing(0)
+                        .build();
+                mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+            } else {
+                CameraPosition cameraPosition = CameraPosition.builder()
+                        .target(bounds.getCenter())
+                        .bearing(0)
+                        .build();
+                mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+                mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 50));
+            }
         }
     }
 }

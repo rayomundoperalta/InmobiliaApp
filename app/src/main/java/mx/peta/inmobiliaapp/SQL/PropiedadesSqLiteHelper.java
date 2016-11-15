@@ -33,29 +33,33 @@ public class PropiedadesSqLiteHelper extends SQLiteOpenHelper {
     public static final String  APP_COLUM_VALDESSTN          = "valor_desstn";
     public static final String  APP_COLUM_REVISADOMANUALMENT = "revisado_manualmente";
     public static final String  APP_COLUM_SENSIBILIDAD       = "sensibilidad";
+    public static final String  APP_COLUM_GROUPPOSITION      = "group_position";
+    public static final String  APP_COLUM_CHILDPOSITION      = "child_position";
 
     private static final String CREATE_PROPIEDADES_TABLE   = "create table " + APP_TABLE_NAME + " (" +
-            APP_COLUM_ID +              " integer primary key autoincrement, " +
-            APP_COLUM_TELEFONO +         " text no null, " +
-            APP_COLUM_DIRECCION +        " text no null, " +
-            APP_COLUM_LATITUD +          " double, " +
-            APP_COLUM_LONGITUD +         " double, " +
-            APP_COLUM_PHOTOFILENAME +    " text no null, " +
-            APP_COLUM_TIPOLOGIA +        " double, " +
-            APP_COLUM_CP +               " double, " +
-            APP_COLUM_DELEGACION +       " double, " +
-            APP_COLUM_ENTIDAD +          " double, " +
-            APP_COLUM_PROXIMIDADURBANA + " double, " +
-            APP_COLUM_CLASEINMUEBLE +    " double, " +
-            APP_COLUM_VIDAUTIL +         " double, " +
-            APP_COLUM_SUPERTERRENO +     " double, " +
-            APP_COLUM_SUPERCONSTRUIDO +  " double, " +
-            APP_COLUM_VALCONST +         " double, " +
-            APP_COLUM_VALCONCLUIDO +     " double, " +
-            APP_COLUM_VALESTIMADO +      " double, " +
-            APP_COLUM_VALDESSTN +        " double, " +
+            APP_COLUM_ID +                 " integer primary key autoincrement, " +
+            APP_COLUM_TELEFONO +           " text no null, " +
+            APP_COLUM_DIRECCION +          " text no null, " +
+            APP_COLUM_LATITUD +            " double, " +
+            APP_COLUM_LONGITUD +           " double, " +
+            APP_COLUM_PHOTOFILENAME +      " text no null, " +
+            APP_COLUM_TIPOLOGIA +          " double, " +
+            APP_COLUM_CP +                 " double, " +
+            APP_COLUM_DELEGACION +         " double, " +
+            APP_COLUM_ENTIDAD +            " double, " +
+            APP_COLUM_PROXIMIDADURBANA +   " double, " +
+            APP_COLUM_CLASEINMUEBLE +      " double, " +
+            APP_COLUM_VIDAUTIL +           " double, " +
+            APP_COLUM_SUPERTERRENO +       " double, " +
+            APP_COLUM_SUPERCONSTRUIDO +    " double, " +
+            APP_COLUM_VALCONST +           " double, " +
+            APP_COLUM_VALCONCLUIDO +       " double, " +
+            APP_COLUM_VALESTIMADO +        " double, " +
+            APP_COLUM_VALDESSTN +          " double, " +
             APP_COLUM_REVISADOMANUALMENT + " double, " +
-            APP_COLUM_SENSIBILIDAD +     " int ) ";
+            APP_COLUM_SENSIBILIDAD +       " int, " +
+            APP_COLUM_GROUPPOSITION +      " int, " +
+            APP_COLUM_CHILDPOSITION +      " int ) ";
 
 
     public PropiedadesSqLiteHelper(Context context) {

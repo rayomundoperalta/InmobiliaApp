@@ -31,6 +31,7 @@ public class CapturaEstadoMunicipio extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_captura_estado_municipio);
 
+        System.out.println("Inmobilia captura estado y municipio onCreate");
         // Inicializamos registro propiedad
         propiedad.setTakingPhotoState(false);
 
@@ -86,6 +87,12 @@ public class CapturaEstadoMunicipio extends AppCompatActivity {
                 );
 
                 Propiedad propiedad = Propiedad.getInstance();
+                /*
+                    la clave del estado y el municipio no corresponden a la posición que tienen en
+                    el catalogo, por lo tanto es necesario mantenerlos en la estructura de datos para
+                    poder recuperar los nombres del estado y del municipio para el despliegue de la
+                    aplicacion
+                 */
                 String s1 = null, s2 = null;
                 switch(claveMunicipio.length()) {
                     case 4:
@@ -104,6 +111,12 @@ public class CapturaEstadoMunicipio extends AppCompatActivity {
                 Double m = (Double.valueOf(s2)).doubleValue();
                 propiedad.setEntidad(e);
                 propiedad.setDelegacion(m);
+                /*
+                    Cuidado las posiciones de los estados en la lista ordenada no coinciden con la
+                    clave de estado
+                 */
+                propiedad.setGroupPosition(groupPosition);
+                propiedad.setChildPosition(childPosition);
                 Intent intent = new Intent(getApplicationContext(), CapturaDatosNumericos.class);
                 startActivity(intent);
                 finish();

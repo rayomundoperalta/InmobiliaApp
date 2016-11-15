@@ -31,6 +31,8 @@ public class PropiedadesModelItem {
     public Double valDesStn;
     public int revisadoManualment;
     public Double sensibilidad;
+    public int groupPosition;
+    public int childPosition;
 
     public PropiedadesModelItem(
             String telefono,
@@ -52,7 +54,9 @@ public class PropiedadesModelItem {
             Double valEstimado,
             Double valDesStn,
             int revisadoManualment,
-            Double sensibilidad) {
+            Double sensibilidad,
+            int groupPosition,
+            int childPosition) {
         this.telefono           = telefono;
         this.direccion          = direccion;
         this.latitud            = latitud;
@@ -73,5 +77,7 @@ public class PropiedadesModelItem {
         this.valDesStn          = valDesStn;
         this.revisadoManualment = revisadoManualment;
         this.sensibilidad       = sensibilidad;
+        this.groupPosition      = groupPosition;
+        this.childPosition      = childPosition;
     }
 }

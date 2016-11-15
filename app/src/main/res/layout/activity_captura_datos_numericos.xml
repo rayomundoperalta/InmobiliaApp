@@ -55,7 +55,7 @@
             android:layout_weight="1">
 
             <TextView
-                android:text="Vida útil"
+                android:text="Vida útil-meses"
                 android:layout_width="180dp"
                 android:layout_height="40dp"
                 android:id="@+id/textViewVidaUtil"
@@ -82,7 +82,7 @@
             android:layout_weight="1" >
 
             <TextView
-                android:text="Superficie Terreno"
+                android:text="Superficie Terreno-m2"
                 android:layout_width="180dp"
                 android:layout_height="40dp"
                 android:id="@+id/textViewSuperTerreno"
@@ -109,7 +109,7 @@
             android:layout_weight="1" >
 
             <TextView
-                android:text="Superficie Construida"
+                android:text="Superficie Construida-m2"
                 android:layout_width="180dp"
                 android:layout_height="40dp"
                 android:id="@+id/textView6"
@@ -135,7 +135,7 @@
             android:layout_weight="1" >
 
             <TextView
-                android:text="Valor de la Construcción"
+                android:text="Valor de la Construcción-$"
                 android:layout_width="180dp"
                 android:layout_height="40dp"
                 android:id="@+id/textViewValorConstruccion"
@@ -161,7 +161,7 @@
             android:layout_weight="1" >
 
             <TextView
-                android:text="Valor concluido"
+                android:text="Precio-$"
                 android:layout_width="180dp"
                 android:layout_height="40dp"
                 android:id="@+id/textViewValorConcluido"

@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_ver_detalle_propiedad"
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingBottom="@dimen/activity_vertical_margin"
@@ -10,12 +12,196 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="mx.peta.inmobiliaapp.VerDetallePropiedad">
 
+    <ImageView
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        app:srcCompat="@android:drawable/ic_menu_camera"
+        android:id="@+id/imageView"
+        android:layout_weight="0.37" />
+
     <TextView
-        android:text="Hola Mundo!"
+        android:text="Direccion"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="109dp"
-        android:id="@+id/textView2" />
-</RelativeLayout>
+        android:layout_below="@+id/imageView"
+        android:id="@+id/textViewDireccion"
+        android:layout_weight="1" />
+
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textViewDireccion"
+        android:id="@+id/entidad_municipio"
+        android:layout_weight="1">
+
+        <TextView
+            android:text="Municipio"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/textViewMunicipio"
+            android:layout_weight="1" />
+
+        <TextView
+            android:text="CP"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/textViewCP"
+            android:layout_weight="1" />
+
+        <TextView
+            android:text="Entidad"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/textViewEntidad"
+            android:layout_weight="1" />
+
+
+    </LinearLayout>
+
+    <TextView
+        android:text="Precio"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/entidad_municipio"
+        android:id="@+id/textViewPrecio"
+        android:layout_weight="1" />
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textViewPrecio"
+        android:id="@+id/estimarValorConBoton"
+        android:layout_weight="1">
+
+        <TextView
+            android:text="Valor Estimado"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/textViewValorEstimado"
+            android:layout_weight="1" />
+
+        <Button
+            android:text="Estima"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/btnEstima"
+            android:layout_weight="1"/>
+    </LinearLayout>
+
+    <TextView
+        android:text="Vida útil"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/estimarValorConBoton"
+        android:id="@+id/textViewVidaUtil"
+        android:layout_weight="1" />
+
+    <TextView
+        android:text="Superficie terreno"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textViewVidaUtil"
+        android:id="@+id/textViewSuperficieTerreno"
+        android:layout_weight="1" />
+
+    <TextView
+        android:text="Superficie Construido"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textViewSuperficieTerreno"
+        android:id="@+id/textViewSuperficieConstruccion"
+        android:layout_weight="1" />
+
+    <TextView
+        android:text="Valor Construcción"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textViewSuperficieConstruccion"
+        android:id="@+id/textViewValorConstruccion"
+        android:layout_weight="1" />
+
+
+    <TextView
+        android:text="Proximidad Urbana"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textViewValorConstruccion"
+        android:id="@+id/textViewProximidadUrbana"
+        android:layout_weight="1" />
+
+    <TextView
+        android:text="Tipologia"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textViewProximidadUrbana"
+        android:id="@+id/textViewTipologia"
+        android:layout_weight="1" />
+
+    <TextView
+        android:text="Clase del inmueble"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textViewTipologia"
+        android:id="@+id/textViewClaseInmueble"
+        android:layout_weight="1" />
+
+    <TextView
+        android:text="Teléfono"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textViewClaseInmueble"
+        android:id="@+id/textViewTelefono"
+        android:layout_weight="1" />
+
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textViewTelefono"
+        android:id="@+id/coordenadas"
+        android:layout_weight="1">
+        <TextView
+            android:text="Latitud"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/textViewLatitud"
+            android:layout_weight="1" />
+
+        <TextView
+            android:text="Longitud"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/textViewLongitud"
+            android:layout_weight="1" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/coordenadas"
+        android:id="@+id/botones"
+        android:layout_weight="1">
+
+    <Button
+        android:text="Regresa"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/btnRegresa"
+        android:layout_weight="1" />
+
+    <Button
+        android:text="Borra"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/btnBorra"
+        android:layout_weight="1"
+        />
+
+    </LinearLayout>
+
+</LinearLayout>

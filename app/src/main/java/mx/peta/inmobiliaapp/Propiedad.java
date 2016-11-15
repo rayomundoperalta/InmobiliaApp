@@ -113,6 +113,14 @@ public class Propiedad {
     private Double sensibilidad = 0.0;
     public Double getSensibilidad() { return this.sensibilidad; }
     public void setSensibilidad(Double sensibilidad) { this.sensibilidad = sensibilidad; }
+
+    private int groupPosition = 0;
+    public int getGroupPosition() { return this.groupPosition; }
+    public void setGroupPosition(int groupPosition) { this.groupPosition = groupPosition; }
+
+    private int childPosition = 0;
+    public int getChildPosition() { return this.childPosition; }
+    public void setChildPosition(int childPosition) { this.childPosition = childPosition; }
 }
 /*
     Estos aon los tipos e datos que se usan para llamar al web service

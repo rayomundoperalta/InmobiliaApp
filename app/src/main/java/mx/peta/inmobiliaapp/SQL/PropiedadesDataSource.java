@@ -62,6 +62,8 @@ public class PropiedadesDataSource {
             values.put(PropiedadesSqLiteHelper.APP_COLUM_VALDESSTN, propiedad.valDesStn);
             values.put(PropiedadesSqLiteHelper.APP_COLUM_REVISADOMANUALMENT, propiedad.revisadoManualment);
             values.put(PropiedadesSqLiteHelper.APP_COLUM_SENSIBILIDAD, propiedad.sensibilidad);
+            values.put(PropiedadesSqLiteHelper.APP_COLUM_GROUPPOSITION, propiedad.groupPosition);
+            values.put(PropiedadesSqLiteHelper.APP_COLUM_CHILDPOSITION, propiedad.childPosition);
 
             db.insert(PropiedadesSqLiteHelper.APP_TABLE_NAME, null, values);
             db.setTransactionSuccessful();
@@ -77,7 +79,7 @@ public class PropiedadesDataSource {
      */
     public PropiedadesModelItem getRegistro(int id) {
         String QUERY = "select " +
-                PropiedadesSqLiteHelper.APP_COLUM_ID            + ", " +
+                PropiedadesSqLiteHelper.APP_COLUM_ID + ", " +
                 PropiedadesSqLiteHelper.APP_COLUM_TELEFONO + ", " +
                 PropiedadesSqLiteHelper.APP_COLUM_DIRECCION + ", " +
                 PropiedadesSqLiteHelper.APP_COLUM_LATITUD + ", " +
@@ -97,10 +99,12 @@ public class PropiedadesDataSource {
                 PropiedadesSqLiteHelper.APP_COLUM_VALESTIMADO + ", " +
                 PropiedadesSqLiteHelper.APP_COLUM_VALDESSTN + ", " +
                 PropiedadesSqLiteHelper.APP_COLUM_REVISADOMANUALMENT + ", " +
-                PropiedadesSqLiteHelper.APP_COLUM_SENSIBILIDAD +
+                PropiedadesSqLiteHelper.APP_COLUM_SENSIBILIDAD + ", " +
+                PropiedadesSqLiteHelper.APP_COLUM_GROUPPOSITION + ", " +
+                PropiedadesSqLiteHelper.APP_COLUM_CHILDPOSITION +
                 " from " + PropiedadesSqLiteHelper.APP_TABLE_NAME + " where " + PropiedadesSqLiteHelper.APP_COLUM_ID +
                 " = ?";
-        // db.rawQuery("SELECT id, name FROM people WHERE name = ? AND id = ?", new String[] {"David", "2"});
+        // ejemplo de instrucción db.rawQuery("SELECT id, name FROM people WHERE name = ? AND id = ?", new String[] {"David", "2"});
         Cursor cursor = db.rawQuery(QUERY, new String[] {Integer.toString(id)});
         if (cursor.moveToFirst()) {
             PropiedadesModelItem modelItem = new PropiedadesModelItem(
@@ -123,7 +127,9 @@ public class PropiedadesDataSource {
                     cursor.getDouble(cursor.getColumnIndexOrThrow(PropiedadesSqLiteHelper.APP_COLUM_VALESTIMADO)),
                     cursor.getDouble(cursor.getColumnIndexOrThrow(PropiedadesSqLiteHelper.APP_COLUM_VALDESSTN)),
                     cursor.getInt(cursor.getColumnIndexOrThrow(PropiedadesSqLiteHelper.APP_COLUM_REVISADOMANUALMENT)),
-                    cursor.getDouble(cursor.getColumnIndexOrThrow(PropiedadesSqLiteHelper.APP_COLUM_SENSIBILIDAD)));
+                    cursor.getDouble(cursor.getColumnIndexOrThrow(PropiedadesSqLiteHelper.APP_COLUM_SENSIBILIDAD)),
+                    cursor.getInt(cursor.getColumnIndexOrThrow(PropiedadesSqLiteHelper.APP_COLUM_GROUPPOSITION)),
+                    cursor.getInt(cursor.getColumnIndexOrThrow(PropiedadesSqLiteHelper.APP_COLUM_CHILDPOSITION)));
             modelItem.id = cursor.getInt(cursor.getColumnIndexOrThrow(PropiedadesSqLiteHelper.APP_COLUM_ID));
             cursor.close();
             return modelItem;
@@ -163,7 +169,9 @@ public class PropiedadesDataSource {
                 PropiedadesSqLiteHelper.APP_COLUM_VALESTIMADO           + " = '" + modelItem.valEstimado + "'," +
                 PropiedadesSqLiteHelper.APP_COLUM_VALDESSTN             + " = '" + modelItem.valDesStn + "'," +
                 PropiedadesSqLiteHelper.APP_COLUM_REVISADOMANUALMENT    + " = '" + modelItem.revisadoManualment + "'," +
-                PropiedadesSqLiteHelper.APP_COLUM_SENSIBILIDAD          + " = '" + modelItem.sensibilidad + "' " +
+                PropiedadesSqLiteHelper.APP_COLUM_SENSIBILIDAD          + " = '" + modelItem.sensibilidad + "'," +
+                PropiedadesSqLiteHelper.APP_COLUM_GROUPPOSITION         + " = '" + modelItem.groupPosition + "'," +
+                PropiedadesSqLiteHelper.APP_COLUM_CHILDPOSITION         + " = '" + modelItem.childPosition + "' " +
                 " where " + PropiedadesSqLiteHelper.APP_COLUM_ID  + " = " + String.valueOf(modelItem.id);
         System.out.println("Inmovilia " + QUERY);
         db.execSQL(QUERY);
@@ -195,7 +203,9 @@ public class PropiedadesDataSource {
                     cursor.getDouble(cursor.getColumnIndexOrThrow(PropiedadesSqLiteHelper.APP_COLUM_VALESTIMADO)),
                     cursor.getDouble(cursor.getColumnIndexOrThrow(PropiedadesSqLiteHelper.APP_COLUM_VALDESSTN)),
                     cursor.getInt(cursor.getColumnIndexOrThrow(PropiedadesSqLiteHelper.APP_COLUM_REVISADOMANUALMENT)),
-                    cursor.getDouble(cursor.getColumnIndexOrThrow(PropiedadesSqLiteHelper.APP_COLUM_SENSIBILIDAD)));
+                    cursor.getDouble(cursor.getColumnIndexOrThrow(PropiedadesSqLiteHelper.APP_COLUM_SENSIBILIDAD)),
+                    cursor.getInt(cursor.getColumnIndexOrThrow(PropiedadesSqLiteHelper.APP_COLUM_GROUPPOSITION)),
+                    cursor.getInt(cursor.getColumnIndexOrThrow(PropiedadesSqLiteHelper.APP_COLUM_CHILDPOSITION)));
             modelItem.id = cursor.getInt(cursor.getColumnIndexOrThrow(PropiedadesSqLiteHelper.APP_COLUM_ID));
             modelItemList.add(modelItem);
         }

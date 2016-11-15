@@ -12,6 +12,15 @@ import java.util.List;
  */
 public class CatalogoEstadoMunicipio {
 
+    /*
+                    Muy Importante
+
+                    la clave del estado y el municipio no corresponden a la posición que tienen en
+                    el catalogo, por lo tanto es necesario mantenerlos en la estructura de datos para
+                    poder recuperar los nombres del estado y del municipio para el despliegue de la
+                    aplicacion
+    */
+
     private static CatalogoEstadoMunicipio instance = null;
 
     public static HashMap<String, List<Municipio>> getInstance() {

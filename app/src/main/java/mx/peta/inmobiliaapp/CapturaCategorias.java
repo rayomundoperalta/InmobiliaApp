@@ -46,6 +46,10 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+import static mx.peta.inmobiliaapp.CategoriasPropiedades.itemsClaseInmueble;
+import static mx.peta.inmobiliaapp.CategoriasPropiedades.itemsProximidadUrbana;
+import static mx.peta.inmobiliaapp.CategoriasPropiedades.itemsTipologia;
+
 public class CapturaCategorias extends AppCompatActivity {
 
     Propiedad propiedad = Propiedad.getInstance();
@@ -85,7 +89,7 @@ public class CapturaCategorias extends AppCompatActivity {
 
         propiedad.setValEstimado(0.0);
         propiedad.setValDesStn(0.0);
-        System.out.println("Inmobilia onCreate CapturaCategorias");
+        System.out.println("Inmobilia CapturaCategorias onCreate");
         mImageView = (ImageView) findViewById(R.id.imageViewPropiedad);
         mImageView.setClickable(true);
         textViewLatitud = (TextView) findViewById(R.id.textViewLat);
@@ -114,6 +118,7 @@ public class CapturaCategorias extends AppCompatActivity {
                     //tipologia=2
                     //&CP=4318&delegacion=9003&entidad=9&proximidadUrbana=1&claseInmueble=5&vidautil=720&superTerreno=400&superConstruido=400
                     // &valConst=4000000&valConcluido=8000000&revisadoManualmente=0&USER=rayo&PASSWORD=rayo&sensibilidad=3.5
+                    propiedad.setSensibilidad(4.0);
                     Call<AvaluoValido> callApiService = apiService.getAvaluo(
                             propiedad.getTipologia(),
                             propiedad.getCP(),
@@ -129,17 +134,21 @@ public class CapturaCategorias extends AppCompatActivity {
                             propiedad.getRevisadoManualment(),
                             "rayo",
                             "rayo",
-                            3.5);
+                            propiedad.getSensibilidad());
                     callApiService.enqueue(new Callback<AvaluoValido>() {
                         @Override
                         public void onResponse(Call<AvaluoValido> call, Response<AvaluoValido> response) {
-                            AvaluoValidoJsonResult res = response.body().getAvaluoValidoJsonResult();
-                            propiedad.setValEstimado(res.getValorEstimado());
-                            propiedad.setValDesStn(res.getDesStn());
-                            DecimalFormat formateador = new DecimalFormat("###,###");
-                            TextView textViewEstimacionValor = (TextView) findViewById(R.id.textViewEstimacionValor);
-                            textViewEstimacionValor.setText("Valor estimado $" + formateador.format(res.getValorEstimado()) + " +- $" +
-                                    formateador.format(res.getDesStn()));
+                            if (response == null) {
+                                Toast.makeText(getApplicationContext(), "Volver a intentar mas tarde calcular el valor estimado", Toast.LENGTH_LONG).show();
+                            } else {
+                                AvaluoValidoJsonResult res = response.body().getAvaluoValidoJsonResult();
+                                propiedad.setValEstimado(res.getValorEstimado());
+                                propiedad.setValDesStn(res.getDesStn());
+                                DecimalFormat formateador = new DecimalFormat("###,###");
+                                TextView textViewEstimacionValor = (TextView) findViewById(R.id.textViewEstimacionValor);
+                                textViewEstimacionValor.setText("Valor estimado $" + formateador.format(res.getValorEstimado()) + " +- $" +
+                                        formateador.format(res.getDesStn()));
+                            }
                             //Toast.makeText(getApplicationContext(),"Avaluo válido " + res.getAvaluoValido().toString() + "\n " +
                             //        "Valor estimado " + res.getValorEstimado().toString() + "\n " +
                             //        "DS " + res.getDesStn().toString() + "\n " +
@@ -193,7 +202,9 @@ public class CapturaCategorias extends AppCompatActivity {
                         propiedad.getValEstimado(),
                         propiedad.getValDesStn(),
                         propiedad.getRevisadoManualment(),
-                        propiedad.getSensibilidad());
+                        propiedad.getSensibilidad(),
+                        propiedad.getGroupPosition(),
+                        propiedad.getChildPosition());
                 ds.writeRegistro(modelItem);
                 finish();
             }
@@ -226,10 +237,8 @@ public class CapturaCategorias extends AppCompatActivity {
         });
 
         /* se habilitan los sppiners */
-        spinnerProximidadUrbana = (Spinner) findViewById(R.id.spinnerProximidadUrbana);
 
-        String[] itemsProximidadUrbana = new String[] { "Céntrica (1)", "Intermedia (2)", "Periférica (3)",
-                "De expansión (4)", "Rural (5)" };
+        spinnerProximidadUrbana = (Spinner) findViewById(R.id.spinnerProximidadUrbana);
 
         ArrayAdapter<String> adapterProximidadUrbana = new ArrayAdapter<String>(this,
                 android.R.layout.simple_spinner_item, itemsProximidadUrbana);
@@ -252,9 +261,6 @@ public class CapturaCategorias extends AppCompatActivity {
 
         spinnerTipologia = (Spinner) findViewById(R.id.spinnerTipologia);
 
-        String[] itemsTipologia = new String[] { "Terreno (1)", "Casa habitación (2)", "Casa en condominio (3)",
-                "Departamento en Condominio (4)",  "Casas multiples (5)", "Otros (6)"};
-
         ArrayAdapter<String> adapterTipologia = new ArrayAdapter<String>(this,
                 android.R.layout.simple_spinner_item, itemsTipologia);
 
@@ -276,9 +282,6 @@ public class CapturaCategorias extends AppCompatActivity {
 
         spinnerClaseInmueble = (Spinner) findViewById(R.id.spinnerClaseInmueble);
 
-        String[] itemsClaseInmueble = new String[] { "Mínima (1)", "Económica (2)", "Intereés social (3)",
-                "Medio (4)", "Semilujo (5)", "Residencial (6)", "Residencial plus (7)"};
-
         ArrayAdapter<String> adapterClaseInmueble = new ArrayAdapter<String>(this,
                 android.R.layout.simple_spinner_item, itemsClaseInmueble);
 
@@ -297,11 +300,12 @@ public class CapturaCategorias extends AppCompatActivity {
                 // TODO Auto-generated method stub
             }
         });
+        propiedad.setSensibilidad(4.0);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        System.out.println("Inmobilia onActivity result");
+        System.out.println("Inmobilia Captura Categorias onActivity result");
         if (requestCode == 100 && resultCode == RESULT_OK) {
 
             Bundle extras = data.getExtras();

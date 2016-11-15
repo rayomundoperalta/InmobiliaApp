@@ -27,6 +27,7 @@ public class CapturaDatosNumericos extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_captura_datos_numericos);
 
+        System.out.println("Inmobilia Captura datos numéricos onCreate");
         propiedad = Propiedad.getInstance();
         propiedad.setTakingPhotoState(false);
 
