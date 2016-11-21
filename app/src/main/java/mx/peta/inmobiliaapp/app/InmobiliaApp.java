@@ -2,6 +2,7 @@ package mx.peta.inmobiliaapp.app;
 
 import android.app.Application;
 
+import com.facebook.AccessToken;
 import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
 
@@ -19,8 +20,8 @@ public class InmobiliaApp extends Application {
         /*
             Se puede invocar el metodo getInstance de un singleton con el argumento  Context.getApplicationContext() as a Context argument
          */
-        FacebookSdk.sdkInitialize(this);
+        FacebookSdk.sdkInitialize(getApplicationContext());
         AppEventsLogger.activateApp(this);
-
+        AccessToken accessToken = AccessToken.getCurrentAccessToken();
     }
 }

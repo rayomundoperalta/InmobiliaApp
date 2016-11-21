@@ -1,23 +1,38 @@
 package mx.peta.inmobiliaapp;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.os.Handler;
-import android.support.v7.app.AppCompatActivity;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.facebook.AccessToken;
+import com.facebook.CallbackManager;
+import com.facebook.FacebookAuthorizationException;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.Profile;
+import com.facebook.ProfileTracker;
+import com.facebook.login.LoginManager;
+import com.facebook.login.LoginResult;
+import com.facebook.share.ShareApi;
+import com.facebook.share.Sharer;
+import com.facebook.share.model.ShareLinkContent;
+import com.facebook.share.model.SharePhoto;
+import com.facebook.share.model.SharePhotoContent;
+import com.facebook.share.widget.ShareDialog;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import org.w3c.dom.Text;
-
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -39,13 +54,70 @@ import static mx.peta.inmobiliaapp.CategoriasPropiedades.itemsClaseInmueble;
 import static mx.peta.inmobiliaapp.CategoriasPropiedades.itemsProximidadUrbana;
 import static mx.peta.inmobiliaapp.CategoriasPropiedades.itemsTipologia;
 
-public class    VerDetallePropiedad extends AppCompatActivity {
+public class VerDetallePropiedad extends AppCompatActivity {
 
     private PropiedadesModelItem modelItem;
     private Button btnEstima;
     private Button btnRegresa;
     private Button btnBorra;
+    private Button btnComparte;
     private PropiedadesDataSource ds = null;
+    private Bitmap bitmap;
+
+    private final String PENDING_ACTION_BUNDLE_KEY =
+            "mx.peta.inmobiliaapp:PendingAction";
+    private PendingAction pendingAction = PendingAction.NONE;
+
+    private static final String PERMISSION = "publish_actions";
+    private boolean canPresentShareDialog;
+    private boolean canPresentShareDialogWithPhotos;
+    private ShareDialog shareDialog;
+    private ProfileTracker profileTracker;
+    private CallbackManager callbackManager;
+    private FacebookCallback<Sharer.Result> shareCallback = new FacebookCallback<Sharer.Result>() {
+        @Override
+        public void onCancel() {
+            System.out.println("Inmovilia share facebook - Canceled");
+            showResult("Inmobilia", "onCancel");
+        }
+
+        @Override
+        public void onError(FacebookException error) {
+            System.out.println("Inmobilia - share facebook Error: " + error.toString());
+            String title = "Inmobilia";
+            String alertMessage = error.getMessage();
+            showResult(title, alertMessage);
+        }
+
+        @Override
+        public void onSuccess(Sharer.Result result) {
+            System.out.println("Inmobilia share facebook Success!");
+            if (result.getPostId() != null) {
+                String title = "Inmobilia lo logro";
+                String id = result.getPostId();
+                String alertMessage = "Inmobilia share facebook successfully_posted_post " + id;
+                showResult(title, alertMessage);
+            }
+        }
+
+        private void showResult(String title, String alertMessage) {
+            System.out.println("Inmobilia " + title + " " + alertMessage);
+            /**
+            new AlertDialog.Builder(VerDetallePropiedad.this)
+                    .setTitle(title)
+                    .setMessage(alertMessage)
+                    .setPositiveButton("OK", null)
+                    .show();
+            /**/
+        }
+    };
+
+    private enum PendingAction {
+        NONE,
+        POST_PHOTO,
+        POST_STATUS_UPDATE,
+        POST_LINK
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,7 +175,7 @@ public class    VerDetallePropiedad extends AppCompatActivity {
         bmOptions.inSampleSize = scaleFactor;
         bmOptions.inPurgeable = true;
 
-        Bitmap bitmap = BitmapFactory.decodeFile(modelItem.photoFileName, bmOptions);
+        bitmap = BitmapFactory.decodeFile(modelItem.photoFileName, bmOptions);
         imageView.setImageBitmap(bitmap);
 
         DecimalFormat formateador = new DecimalFormat("###,###");
@@ -209,11 +281,239 @@ public class    VerDetallePropiedad extends AppCompatActivity {
                 finish();
             }
         });
+
         btnRegresa.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 finish();
             }
         });
+
+        /*
+            ---------------------------------------------------------------------------------------
+            Aqui empieza el codigo para compartir información en Facebook
+         */
+
+        //FacebookSdk.sdkInitialize(this.getApplicationContext());
+
+        AccessToken accessToken = AccessToken.getCurrentAccessToken();
+        callbackManager = CallbackManager.Factory.create();
+
+        LoginManager.getInstance().registerCallback(callbackManager,
+                new FacebookCallback<LoginResult>() {
+                    @Override
+                    public void onSuccess(LoginResult loginResult) {
+                        System.out.println("Inmobila Login manager success");
+                        /**
+                        new AlertDialog.Builder(VerDetallePropiedad.this)
+                                .setTitle("Login manager")
+                                .setMessage("onSuccess")
+                                .setPositiveButton("OK", null)
+                                .show();
+                         /**/
+                        handlePendingAction();
+                    }
+
+                    @Override
+                    public void onCancel() {
+                        if (pendingAction != PendingAction.NONE) {
+                            showAlert();
+                            pendingAction = PendingAction.NONE;
+                        }
+                    }
+
+                    @Override
+                    public void onError(FacebookException exception) {
+                        if (pendingAction != PendingAction.NONE
+                                && exception instanceof FacebookAuthorizationException) {
+                            showAlert();
+                            pendingAction = PendingAction.NONE;
+                        }
+                    }
+
+                    private void showAlert() {
+                        System.out.println("Inmobilia " + "petición cancelada");
+                        /**
+                        new AlertDialog.Builder(VerDetallePropiedad.this)
+                                .setTitle("Cancelada")
+                                .setMessage("permission_not_granted")
+                                .setPositiveButton("ok", null)
+                                .show();
+                         /**/
+                    }
+                });
+
+        shareDialog = new ShareDialog(this);
+        shareDialog.registerCallback(
+                callbackManager,
+                shareCallback);
+
+        if (savedInstanceState != null) {
+            String name = savedInstanceState.getString(PENDING_ACTION_BUNDLE_KEY);
+            pendingAction = PendingAction.valueOf(name);
+        }
+
+        profileTracker = new ProfileTracker() {
+            @Override
+            protected void onCurrentProfileChanged(Profile oldProfile, Profile currentProfile) {
+                // It's possible that we were waiting for Profile to be populated in order to
+                // post a status update.
+                handlePendingAction();
+            }
+        };
+
+        // Can we present the share dialog for regular links?
+        canPresentShareDialog = ShareDialog.canShow(
+                ShareLinkContent.class);
+
+        // Can we present the share dialog for photos?
+        canPresentShareDialogWithPhotos = ShareDialog.canShow(
+                SharePhotoContent.class);
+
+        btnComparte = (Button) findViewById(R.id.btnComparte);
+        btnComparte.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Publicamos el status
+                //performPublish(PendingAction.POST_STATUS_UPDATE, canPresentShareDialog);
+
+                // Publicamos la foto
+                //performPublish(PendingAction.POST_PHOTO, canPresentShareDialogWithPhotos);
+                //finish();
+
+                // Publicamos link
+                performPublish(PendingAction.POST_LINK, canPresentShareDialog);
+                finish();
+            }
+        });
+    }
+
+    private boolean hasPublishPermission() {
+        AccessToken accessToken = AccessToken.getCurrentAccessToken();
+        return accessToken != null && accessToken.getPermissions().contains("publish_actions");
+    }
+
+    private void handlePendingAction() {
+        PendingAction previouslyPendingAction = pendingAction;
+        // These actions may re-set pendingAction if they are still pending, but we assume they
+        // will succeed.
+        pendingAction = PendingAction.NONE;
+
+        switch (previouslyPendingAction) {
+            case NONE:
+                break;
+            case POST_PHOTO:
+                postPhoto();
+                break;
+            case POST_STATUS_UPDATE:
+                postStatusUpdate();
+                break;
+            case POST_LINK:
+                postLink();
+                break;
+        }
+    }
+
+    private void postPhoto() {
+        //Bitmap image = BitmapFactory.decodeResource(this.getResources(), R.drawable.ic_email_black);
+        //Uri myUri = Uri.parse("http://www.google.com");
+        SharePhoto sharePhoto = new SharePhoto
+                .Builder()
+                .setBitmap(bitmap)
+                .setCaption("Esta podria ser mi nueva casa")
+                //.setImageUrl(Uri.parse("http://peta.mx/images/favicon/apple-icon-180x180.png"))
+                .setUserGenerated(true)
+                .build();
+        ArrayList<SharePhoto> photos = new ArrayList<>();
+        photos.add(sharePhoto);
+
+        SharePhotoContent sharePhotoContent =
+                new SharePhotoContent.Builder().addPhoto(sharePhoto).build();
+
+                        //.setPhotos(photos).build();
+
+        if (canPresentShareDialogWithPhotos) {
+            shareDialog.show(sharePhotoContent);
+        } else if (hasPublishPermission()) {
+            ShareApi.share(sharePhotoContent, shareCallback);
+        } else {
+            pendingAction = PendingAction.POST_PHOTO;
+            // We need to get new permissions, then complete the action when we get called back.
+
+            LoginManager.getInstance().logInWithPublishPermissions(
+                    this,
+                    Arrays.asList(PERMISSION));
+        }
+    }
+
+    private void postLink() {
+        ShareLinkContent content = new ShareLinkContent.Builder()
+                .setContentUrl(Uri.parse("http://avaluos.peta.mx"))
+                .setContentTitle("Está usando InmobiliaApp para lograr un buen trato para su nueva casa")
+                .setContentDescription("esta localización me gusta y a buen precio\n" + "http://maps.google.com/maps?q=" + Double.toString(modelItem.latitud) + "," + Double.toString(modelItem.longitud))
+                .setImageUrl(Uri.parse("http://peta.mx/images/favicon/apple-icon-180x180.png"))
+                .build();
+
+        if (canPresentShareDialogWithPhotos) {
+            shareDialog.show(content);
+        } else if (hasPublishPermission()) {
+            ShareApi.share(content, shareCallback);
+        } else {
+            pendingAction = PendingAction.POST_PHOTO;
+            // We need to get new permissions, then complete the action when we get called back.
+
+            LoginManager.getInstance().logInWithPublishPermissions(
+                    this,
+                    Arrays.asList(PERMISSION));
+        }
+    }
+
+    private void postStatusUpdate() {
+        Profile profile = Profile.getCurrentProfile();
+        ShareLinkContent linkContent = new ShareLinkContent.Builder()
+                .setContentTitle("InmobiliaApp")
+                .setContentDescription(
+                        "La nueva forma de buscar casa")
+                .setContentUrl(Uri.parse("http://avaluos.peta.mx"))
+                .build();
+        if (canPresentShareDialog) {
+            shareDialog.show(linkContent);
+        } else if (profile != null && hasPublishPermission()) {
+            ShareApi.share(linkContent, shareCallback);
+        } else {
+            pendingAction = PendingAction.POST_STATUS_UPDATE;
+        }
+    }
+
+    private void performPublish(PendingAction action, boolean allowNoToken) {
+        AccessToken accessToken = AccessToken.getCurrentAccessToken();
+        if (accessToken != null || allowNoToken) {
+            pendingAction = action;
+            handlePendingAction();
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putString(PENDING_ACTION_BUNDLE_KEY, pendingAction.name());
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        callbackManager.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        profileTracker.stopTracking();
     }
 }
