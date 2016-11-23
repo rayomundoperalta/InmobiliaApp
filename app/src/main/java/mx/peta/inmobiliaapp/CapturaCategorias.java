@@ -1,12 +1,16 @@
 package mx.peta.inmobiliaapp;
 
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
+import android.location.LocationManager;
 import android.provider.MediaStore;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.format.DateFormat;
@@ -71,16 +75,19 @@ public class CapturaCategorias extends AppCompatActivity {
     String carpetaPropiedades;
     Intent takePictureIntent;
 
+
     @Override
     protected void onResume() {
         super.onResume();
         if (propiedad.getValEstimado() > 0.0) {
             DecimalFormat formateador = new DecimalFormat("###,###");
             TextView textViewEstimacionValor = (TextView) findViewById(R.id.textViewEstimacionValor);
-            textViewEstimacionValor.setText("Valor estimado $" + formateador.format(propiedad.getValEstimado()) + " +- $" +
-                    formateador.format(propiedad.getValDesStn()));
+            double porcentaje = (100.0 * propiedad.getValDesStn()) / propiedad.getValEstimado();
+            textViewEstimacionValor.setText("Valor estimado $" + formateador.format(propiedad.getValEstimado()) + " +- " +
+                    formateador.format(porcentaje) + "%");
         }
     }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -146,8 +153,9 @@ public class CapturaCategorias extends AppCompatActivity {
                                 propiedad.setValDesStn(res.getDesStn());
                                 DecimalFormat formateador = new DecimalFormat("###,###");
                                 TextView textViewEstimacionValor = (TextView) findViewById(R.id.textViewEstimacionValor);
-                                textViewEstimacionValor.setText("Valor estimado $" + formateador.format(res.getValorEstimado()) + " +- $" +
-                                        formateador.format(res.getDesStn()));
+                                double porcentaje = (100.0 * res.getDesStn()) / res.getValorEstimado();
+                                textViewEstimacionValor.setText("Valor estimado $" + formateador.format(res.getValorEstimado()) + " +- " +
+                                        formateador.format(porcentaje) + "%");
                             }
                             //Toast.makeText(getApplicationContext(),"Avaluo válido " + res.getAvaluoValido().toString() + "\n " +
                             //        "Valor estimado " + res.getValorEstimado().toString() + "\n " +
@@ -164,8 +172,9 @@ public class CapturaCategorias extends AppCompatActivity {
                 } else {
                     DecimalFormat formateador = new DecimalFormat("###,###");
                     TextView textViewEstimacionValor = (TextView) findViewById(R.id.textViewEstimacionValor);
-                    textViewEstimacionValor.setText("Valor estimado $" + formateador.format(propiedad.getValEstimado()) + " +- $" +
-                            formateador.format(propiedad.getValDesStn()));
+                    double porcentaje = (100.0 * propiedad.getValDesStn()) / propiedad.getValEstimado();
+                    textViewEstimacionValor.setText("Valor estimado $" + formateador.format(propiedad.getValEstimado()) + " +- " +
+                            formateador.format(porcentaje) + "%");
                 }
 
             }
@@ -206,6 +215,7 @@ public class CapturaCategorias extends AppCompatActivity {
                         propiedad.getGroupPosition(),
                         propiedad.getChildPosition());
                 ds.writeRegistro(modelItem);
+                ds.close();
                 finish();
             }
         });

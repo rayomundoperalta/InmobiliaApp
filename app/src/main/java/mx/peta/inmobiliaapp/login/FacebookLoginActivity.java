@@ -1,23 +1,24 @@
 package mx.peta.inmobiliaapp.login;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
-import android.os.Handler;
+import android.location.LocationManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
 import mx.peta.inmobiliaapp.InternetConnection;
-import mx.peta.inmobiliaapp.SplashScreenActivity;
+import mx.peta.inmobiliaapp.Servicios.ServicioGPS;
 import mx.peta.inmobiliaapp.VistaInicial;
 import mx.peta.inmobiliaapp.R;
-import mx.peta.inmobiliaapp.expandablelistview.CatalogoEstadoMunicipio;
 
 import android.support.design.widget.Snackbar;
 import android.util.Base64;
+import android.widget.Toast;
 
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
@@ -34,6 +35,7 @@ public class FacebookLoginActivity extends AppCompatActivity implements Facebook
     LoginButton loginButton;
 
     private CallbackManager callbackManager;
+    private AlertDialog alert = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,26 +57,48 @@ public class FacebookLoginActivity extends AppCompatActivity implements Facebook
 
         }
 
+        final LocationManager manager = (LocationManager) getSystemService( Context.LOCATION_SERVICE );
+
         // antes que nada se verifica si tenemos conexion de internet
         if (InternetConnection.isOnLine()) {
-            loginButton = (LoginButton) findViewById(R.id.fb_login_button);
+            if ( !manager.isProviderEnabled( LocationManager.GPS_PROVIDER ) ) {
+                new AlertDialog.Builder(FacebookLoginActivity.this)
+                        .setTitle("GPS desactivado")
+                        .setMessage("El GPS es indispensable para continuar ¿Desea activarlo?")
+                        .setCancelable(false)
+                        .setPositiveButton("Si", new DialogInterface.OnClickListener() {
+                            public void onClick(@SuppressWarnings("unused") final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
+                                startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+                            }
+                        })
+                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                            public void onClick(final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
+                                dialog.cancel();
+                                finishAffinity();
+                            }
+                        })
+                        .show();
+            } else {
+                ServicioGPS.getInstancia(getApplicationContext());  // Inicializamon el gps
+                loginButton = (LoginButton) findViewById(R.id.fb_login_button);
             /*
                 Vamos a hacer el login usando a Facebook
             */
-            loginButton.setPublishPermissions("publish_actions");
+                loginButton.setPublishPermissions("publish_actions");
 
-            FacebookSdk.sdkInitialize(this.getApplicationContext());
-            callbackManager = CallbackManager.Factory.create();
+                FacebookSdk.sdkInitialize(this.getApplicationContext());
+                callbackManager = CallbackManager.Factory.create();
 
-            loginButton.setPublishPermissions("publish_actions");
-            loginButton.registerCallback(callbackManager, this);
+                loginButton.setPublishPermissions("publish_actions");
+                loginButton.registerCallback(callbackManager, this);
 
-            AccessToken accessToken = AccessToken.getCurrentAccessToken();
-            if (AccessToken.getCurrentAccessToken() != null) {
-                System.out.println("Inmobilia tenemos una sesión abierta");
-                startActivity(new Intent(this, VistaInicial.class));
+                AccessToken accessToken = AccessToken.getCurrentAccessToken();
+                if (AccessToken.getCurrentAccessToken() != null) {
+                    System.out.println("Inmobilia tenemos una sesión abierta");
+                    startActivity(new Intent(this, VistaInicial.class));
+                }
+                System.out.println("Inmobilia Inicializamos el catalogo durante el splas");
             }
-            System.out.println("Inmobilia Inicializamos el catalogo durante el splas");
         } else {
             new AlertDialog.Builder(FacebookLoginActivity.this)
                     .setTitle("Error")

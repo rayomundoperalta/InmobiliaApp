@@ -16,12 +16,12 @@ public class InmobiliaApp extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        ServicioGPS.getInstancia(getApplicationContext());  // Inicializamon el gps
+
         /*
             Se puede invocar el metodo getInstance de un singleton con el argumento  Context.getApplicationContext() as a Context argument
          */
         FacebookSdk.sdkInitialize(getApplicationContext());
         AppEventsLogger.activateApp(this);
-        AccessToken accessToken = AccessToken.getCurrentAccessToken();
+        // ServicioGPS.getInstancia(getApplicationContext());  // Inicializamon el gps
     }
 }

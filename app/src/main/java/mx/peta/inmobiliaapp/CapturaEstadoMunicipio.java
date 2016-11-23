@@ -7,7 +7,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -52,9 +51,8 @@ public class CapturaEstadoMunicipio extends AppCompatActivity {
 
             @Override
             public void onGroupExpand(int groupPosition) {
-                Toast.makeText(getApplicationContext(),
-                        expandableListTitle.get(groupPosition) + " List Expanded.",
-                        Toast.LENGTH_SHORT).show();
+                System.out.println("Inmobilia " +
+                expandableListTitle.get(groupPosition) + " List Expanded.");
             }
         });
 
@@ -62,9 +60,8 @@ public class CapturaEstadoMunicipio extends AppCompatActivity {
 
             @Override
             public void onGroupCollapse(int groupPosition) {
-                Toast.makeText(getApplicationContext(),
-                        expandableListTitle.get(groupPosition) + " List Collapsed.",
-                        Toast.LENGTH_SHORT).show();
+                System.out.println("Inmobilia " +
+                        expandableListTitle.get(groupPosition) + " List Collapsed.");
 
             }
         });
@@ -104,7 +101,7 @@ public class CapturaEstadoMunicipio extends AppCompatActivity {
                         s2 = claveMunicipio.substring(2, 5);
                         break;
                     default:
-                        Toast.makeText(getApplicationContext(),"Esto no debe pasar jamas", Toast.LENGTH_LONG).show();
+                        System.out.println("Inmobilia Esto no debe pasar jamas");
                 }
 
                 Double e = (Double.valueOf(s1)).doubleValue();

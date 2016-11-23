@@ -3,6 +3,7 @@ package mx.peta.inmobiliaapp.Servicios;
 import android.Manifest;
 import android.app.Service;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -12,8 +13,11 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import mx.peta.inmobiliaapp.login.FacebookLoginActivity;
 
 public class ServicioGPS extends Service implements LocationListener {
 
@@ -39,9 +43,9 @@ public class ServicioGPS extends Service implements LocationListener {
 
     private double latitud;
     private double longitud;
-    Location location = null;
-    boolean gpsActivo = false;
-    LocationManager locationManager;
+    private Location location = null;
+    private boolean gpsActivo = false;
+    private LocationManager locationManager;
 
 
     private ServicioGPS(Context context) {
@@ -64,14 +68,6 @@ public class ServicioGPS extends Service implements LocationListener {
         locationManager.removeUpdates(this);
     }
 
-    /*
-    public ServicioGPS(Context c) {
-        super();
-        this.ctx = c;
-        getLocation();
-    }
-    */
-
     public LatLong getLatLong() {
         LatLong latLong = new LatLong();
         latLong.setLatitud(this.latitud);
@@ -83,14 +79,15 @@ public class ServicioGPS extends Service implements LocationListener {
         try {
             locationManager = (LocationManager) this.ctx.getSystemService(LOCATION_SERVICE);
             gpsActivo = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-        } catch(Exception e) {}
+        } catch (Exception e) {
+        }
 
         int permissionCheck = ContextCompat.checkSelfPermission(ctx,
                 Manifest.permission.ACCESS_FINE_LOCATION);
         if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
             if (gpsActivo) {
                 locationManager.requestLocationUpdates(locationManager.GPS_PROVIDER,
-                        10000,            // cada cuantos milisegundos se actualiza la posición
+                        50000,            // cada cuantos milisegundos se actualiza la posición
                         10,             // cada cuantos metros de actualiza la posición
                         this);
                 location = locationManager.getLastKnownLocation(locationManager.GPS_PROVIDER);
@@ -102,10 +99,10 @@ public class ServicioGPS extends Service implements LocationListener {
                     //locationManager.removeUpdates(this);
                 }
             } else {
-                Toast.makeText(ctx, "Se requiere usar el GPS",Toast.LENGTH_LONG).show();
+                Toast.makeText(ctx, "Se requiere usar el GPS, por favor avilitelo.", Toast.LENGTH_LONG).show();
             }
         } else {
-            Toast.makeText(ctx, "Se requiere usar el GPS",Toast.LENGTH_LONG).show();
+            Toast.makeText(ctx, "Se requiere usar el GPS, por favor avilitelo.", Toast.LENGTH_LONG).show();
         }
     }
 

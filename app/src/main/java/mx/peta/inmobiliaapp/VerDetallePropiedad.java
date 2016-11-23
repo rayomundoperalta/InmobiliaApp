@@ -77,13 +77,11 @@ public class VerDetallePropiedad extends AppCompatActivity {
     private FacebookCallback<Sharer.Result> shareCallback = new FacebookCallback<Sharer.Result>() {
         @Override
         public void onCancel() {
-            System.out.println("Inmovilia share facebook - Canceled");
             showResult("Inmobilia", "onCancel");
         }
 
         @Override
         public void onError(FacebookException error) {
-            System.out.println("Inmobilia - share facebook Error: " + error.toString());
             String title = "Inmobilia";
             String alertMessage = error.getMessage();
             showResult(title, alertMessage);
@@ -91,7 +89,6 @@ public class VerDetallePropiedad extends AppCompatActivity {
 
         @Override
         public void onSuccess(Sharer.Result result) {
-            System.out.println("Inmobilia share facebook Success!");
             if (result.getPostId() != null) {
                 String title = "Inmobilia lo logro";
                 String id = result.getPostId();
@@ -124,16 +121,16 @@ public class VerDetallePropiedad extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ver_detalle_propiedad);
         int propiedadI = 0;
-        if (savedInstanceState == null) {
+        //if (savedInstanceState == null) {
             Bundle extras = getIntent().getExtras();
             if(extras == null) {
                 System.out.println("Inmobilia estamos pasando mal el id de la propiedad");
             } else {
                 propiedadI = extras.getInt("MARKER_TAG");
             }
-        } else {
-            propiedadI = (int) savedInstanceState.getSerializable("MARKER_TAG");
-        }
+        //} else {
+        //    propiedadI = (int) savedInstanceState.getSerializable("MARKER_TAG");
+        //}
 
         ImageView imageView = (ImageView) findViewById(R.id.imageView);
         TextView textViewEntidad = (TextView) findViewById(R.id.textViewEntidad);
@@ -199,7 +196,8 @@ public class VerDetallePropiedad extends AppCompatActivity {
         textViewProximidadUrbana.setText("Proximidad urbana: " + itemsProximidadUrbana[((int) modelItem.proximidadUrbana.doubleValue()) - 1]);
         textViewTipologia.setText("Tipologia: " + itemsTipologia[((int) modelItem.tipologia.doubleValue()) - 1]);
         textViewClaseInmueble.setText("Clase Inmueble: " + itemsClaseInmueble[((int) modelItem.claseInmueble.doubleValue()) - 1]);
-        textViewValorEstimado.setText("Valor estimado $" + formateador.format(modelItem.valEstimado) + " +- $" + formateador.format(modelItem.valDesStn));
+        double porcentaje = (100.0 * modelItem.valDesStn) / modelItem.valEstimado;
+        textViewValorEstimado.setText("Valor estimado $" + formateador.format(modelItem.valEstimado) + " +- " + formateador.format(porcentaje) + "%");
         textViewTelefono.setText(modelItem.telefono);
         textViewLatitud.setText("Lat: " + Double.toString(modelItem.latitud));
         textViewLongitud.setText("    Lon: " + Double.toString(modelItem.longitud));
@@ -254,7 +252,8 @@ public class VerDetallePropiedad extends AppCompatActivity {
                                 modelItem.valEstimado = res.getValorEstimado();
                                 modelItem.valDesStn = res.getDesStn();
                                 DecimalFormat formateador = new DecimalFormat("###,###");
-                                textViewValorEstimado.setText("Valor estimado $" + formateador.format(modelItem.valEstimado) + " +- $" + formateador.format(modelItem.valDesStn));
+                                double porcentaje = (100.0 * modelItem.valDesStn) / modelItem.valEstimado;
+                                textViewValorEstimado.setText("Valor estimado $" + formateador.format(modelItem.valEstimado) + " +- " + formateador.format(porcentaje) + "%");
                                 // Es necesario actualizar la base de datos para que no sea necesario recalcular el valor estimado
                                 ds.updateApp(modelItem);
                             }
@@ -450,7 +449,7 @@ public class VerDetallePropiedad extends AppCompatActivity {
         ShareLinkContent content = new ShareLinkContent.Builder()
                 .setContentUrl(Uri.parse("http://avaluos.peta.mx"))
                 .setContentTitle("Está usando InmobiliaApp para lograr un buen trato para su nueva casa")
-                .setContentDescription("esta localización me gusta y a buen precio\n" + "http://maps.google.com/maps?q=" + Double.toString(modelItem.latitud) + "," + Double.toString(modelItem.longitud))
+                .setContentDescription("esta localización le gusta y está a buen precio\n" + "http://maps.google.com/maps?q=" + Double.toString(modelItem.latitud) + "," + Double.toString(modelItem.longitud))
                 .setImageUrl(Uri.parse("http://peta.mx/images/favicon/apple-icon-180x180.png"))
                 .build();
 
@@ -515,5 +514,6 @@ public class VerDetallePropiedad extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         profileTracker.stopTracking();
+        ds.close();
     }
 }

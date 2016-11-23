@@ -12,17 +12,33 @@
     tools:context="mx.peta.inmobiliaapp.login.FacebookLoginActivity"
     >
 
+    <com.facebook.login.widget.LoginButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/fb_login_button"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="78dp" />
+
     <ImageView
         android:layout_width="250dp"
         android:layout_height="250dp"
         app:srcCompat="@mipmap/inmobiliaapp"
         android:id="@+id/imageView2"
-        android:layout_centerHorizontal="true"/>
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="22dp" />
 
-    <com.facebook.login.widget.LoginButton
+    <TextView
+        android:text="Inmovilia App"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/fb_login_button"
+        android:layout_marginTop="59dp"
+        android:id="@+id/textView2"
+        android:elegantTextHeight="true"
+        android:fontFamily="cursive"
+        android:textColor="@color/negro"
+        android:textSize="30sp"
         android:layout_below="@+id/imageView2"
         android:layout_centerHorizontal="true" />
 </RelativeLayout>

@@ -23,6 +23,10 @@ public class PropiedadesDataSource {
         db = helper.getWritableDatabase();
     }
 
+    public void close() {
+        db.close();
+    }
+
     public int cuantosRegistros(String tableName) {
         String count   = "SELECT count(*) FROM " + tableName;
         Cursor mcursor = db.rawQuery(count, null);
@@ -33,7 +37,7 @@ public class PropiedadesDataSource {
         return icount;
     }
 
-    public static void deleteRegistro(PropiedadesModelItem modelItem) {
+    public void deleteRegistro(PropiedadesModelItem modelItem) {
         db.delete(PropiedadesSqLiteHelper.APP_TABLE_NAME,PropiedadesSqLiteHelper.APP_COLUM_ID + " =? ",
                 new String[]{String.valueOf(modelItem.id)});
     }
@@ -177,7 +181,7 @@ public class PropiedadesDataSource {
         db.execSQL(QUERY);
     }
 
-    public static List<PropiedadesModelItem> getAllItems()
+    public List<PropiedadesModelItem> getAllItems()
     {
         List<PropiedadesModelItem> modelItemList = new ArrayList<>();
         Cursor cursor = db.query(PropiedadesSqLiteHelper.APP_TABLE_NAME,null,null,null,null,null,null);

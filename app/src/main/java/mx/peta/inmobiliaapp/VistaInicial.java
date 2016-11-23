@@ -34,9 +34,6 @@ import mx.peta.inmobiliaapp.SQL.PropiedadesModelItem;
 import mx.peta.inmobiliaapp.SQL.PropiedadesSqLiteHelper;
 import mx.peta.inmobiliaapp.Servicios.LatLong;
 import mx.peta.inmobiliaapp.Servicios.ServicioGPS;
-import mx.peta.inmobiliaapp.login.FacebookLoginActivity;
-
-import static mx.peta.inmobiliaapp.SQL.PropiedadesDataSource.getAllItems;
 
 public class VistaInicial extends AppCompatActivity implements OnMapReadyCallback {
 
@@ -47,12 +44,19 @@ public class VistaInicial extends AppCompatActivity implements OnMapReadyCallbac
     private Propiedad propiedad = Propiedad.getInstance();
     private GoogleMap mMap = null;
 
+    private CameraPosition cameraPosition;
+    private LatLngBounds bounds;
+
     SupportMapFragment mapFragment;
 
     @Override
     protected void onResume() {
         super.onResume();
         System.out.println("Inmobilia Vista Inicial onResume()");
+
+        // Se dibuja el mapa
+        mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map);
 
         // Inicializamos el registro propiedad
         propiedad.setTakingPhotoState(false);
@@ -74,9 +78,7 @@ public class VistaInicial extends AppCompatActivity implements OnMapReadyCallbac
         //Initializing NavigationView
         navigationView = (NavigationView) findViewById(R.id.navigation_view);
 
-        // Se dibuja el mapa
-        mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
+
 
         //Setting Navigation View Item Selected Listener to handle the item click of the navigation menu
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
@@ -84,7 +86,6 @@ public class VistaInicial extends AppCompatActivity implements OnMapReadyCallbac
             // This method will trigger on item Click of navigation menu
             @Override
             public boolean onNavigationItemSelected(MenuItem menuItem) {
-
 
                 //Checking if the item is in checked state or not, if not make it in checked state
                 if(menuItem.isChecked()) menuItem.setChecked(false);
@@ -104,7 +105,7 @@ public class VistaInicial extends AppCompatActivity implements OnMapReadyCallbac
                         return true;
 
                     // For rest of the options we just show a toast on click
-
+                    /**
                     case R.id.starred:
                         Toast.makeText(getApplicationContext(),"Stared Selected",Toast.LENGTH_SHORT).show();
                         return true;
@@ -120,6 +121,7 @@ public class VistaInicial extends AppCompatActivity implements OnMapReadyCallbac
                     case R.id.trash:
                         Toast.makeText(getApplicationContext(),"Trash Selected",Toast.LENGTH_SHORT).show();
                         return true;
+                    /**/
                     case R.id.fin:
                         finishAffinity();
                         return true;
@@ -156,8 +158,6 @@ public class VistaInicial extends AppCompatActivity implements OnMapReadyCallbac
 
         //calling sync state is necessay or else your hamburger icon wont show up
         actionBarDrawerToggle.syncState();
-
-
     }
 
     @Override
@@ -214,6 +214,7 @@ public class VistaInicial extends AppCompatActivity implements OnMapReadyCallbac
                 if ((int) marker.getTag()  > 0) {
                     PropiedadesDataSource ds = new PropiedadesDataSource(getApplicationContext());
                     PropiedadesModelItem modelItem = ds.getRegistro((int) marker.getTag());
+                    ds.close();
                     View view = getLayoutInflater().inflate(R.layout.info_window_propiedad, null);
                     ImageView imageView = (ImageView) view.findViewById(R.id.infoWindowImage);
                     TextView textViewTitle = (TextView) view.findViewById(R.id.infoWindowsTitle);
@@ -269,15 +270,15 @@ public class VistaInicial extends AppCompatActivity implements OnMapReadyCallbac
         int cuantosRegistros = ds.cuantosRegistros(PropiedadesSqLiteHelper.APP_TABLE_NAME);
         System.out.println("Inmobilia registros en la base de datos -> > " + cuantosRegistros);
         if (cuantosRegistros == 0) {
+            ds.close();
             // si no hay registros en la base de datos mostramos la posición del celular
-            ServicioGPS gps = ServicioGPS.getInstancia();
-            LatLong latLong = gps.getLatLong();
+            LatLong latLong = ServicioGPS.getInstancia().getLatLong();
             if (latLong == null)
                 System.out.println("Inmobilia no hemos podido recuperar la posición");
             LatLng posicionActual = new LatLng(latLong.getLatitud(), latLong.getLongitud());
             // Add a marker in Mexico and move the camera
             // coordenadas de la Ciudad de México 19.3424545,-99.1843678
-            mMap.addMarker(new MarkerOptions().position(posicionActual).title("Usd. está aqui").snippet("A dónde quiere ir hoy")).setTag(0);
+            mMap.addMarker(new MarkerOptions().position(posicionActual).title("Usd. está aqui").snippet("¿Qué vamos a hacer?")).setTag(0);
             mMap.moveCamera(CameraUpdateFactory.newLatLng(posicionActual));
             CameraPosition cameraPosition = CameraPosition.builder()
                     .target(posicionActual)
@@ -290,24 +291,26 @@ public class VistaInicial extends AppCompatActivity implements OnMapReadyCallbac
                     2000, null);
         } else {
             System.out.println("Inmobilia tenemos registros en la base de datos");
-            List<PropiedadesModelItem> listaPropiedades = getAllItems();
+            List<PropiedadesModelItem> listaPropiedades = ds.getAllItems();
+            ds.close();
             LatLngBounds.Builder boundsBuilder = new LatLngBounds.Builder();
+            LatLng pos = null;
             for (PropiedadesModelItem item:listaPropiedades) {
-                LatLng pos = new LatLng(item.latitud, item.longitud);
+                pos = new LatLng(item.latitud, item.longitud);
                 System.out.println(pos.toString());
                 mMap.addMarker(new MarkerOptions().position(pos).title(item.direccion).snippet(item.telefono)).setTag(item.id);
                 boundsBuilder.include(pos);
             }
-            LatLngBounds bounds = boundsBuilder.build();
+            bounds = boundsBuilder.build();
             if (cuantosRegistros == 1) {
-                CameraPosition cameraPosition = CameraPosition.builder()
-                        .target(bounds.getCenter())
+                cameraPosition = CameraPosition.builder()
+                        .target(pos)
                         .zoom(15)
                         .bearing(0)
                         .build();
                 mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
             } else {
-                CameraPosition cameraPosition = CameraPosition.builder()
+                cameraPosition = CameraPosition.builder()
                         .target(bounds.getCenter())
                         .bearing(0)
                         .build();
