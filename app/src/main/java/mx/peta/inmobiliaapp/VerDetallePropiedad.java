@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -31,8 +32,10 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -57,10 +60,10 @@ import static mx.peta.inmobiliaapp.CategoriasPropiedades.itemsTipologia;
 public class VerDetallePropiedad extends AppCompatActivity {
 
     private PropiedadesModelItem modelItem;
-    private Button btnEstima;
-    private Button btnRegresa;
-    private Button btnBorra;
-    private Button btnComparte;
+    private ImageButton btnEstima;
+    private ImageButton btnRegresa;
+    private ImageButton btnBorra;
+    private ImageButton btnComparte;
     private PropiedadesDataSource ds = null;
     private Bitmap bitmap;
 
@@ -121,16 +124,16 @@ public class VerDetallePropiedad extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ver_detalle_propiedad);
         int propiedadI = 0;
-        //if (savedInstanceState == null) {
+        if (savedInstanceState == null) {
             Bundle extras = getIntent().getExtras();
             if(extras == null) {
                 System.out.println("Inmobilia estamos pasando mal el id de la propiedad");
             } else {
                 propiedadI = extras.getInt("MARKER_TAG");
             }
-        //} else {
-        //    propiedadI = (int) savedInstanceState.getSerializable("MARKER_TAG");
-        //}
+        } else {
+            propiedadI = (int) savedInstanceState.getSerializable("MARKER_TAG");
+        }
 
         ImageView imageView = (ImageView) findViewById(R.id.imageView);
         TextView textViewEntidad = (TextView) findViewById(R.id.textViewEntidad);
@@ -149,7 +152,7 @@ public class VerDetallePropiedad extends AppCompatActivity {
         TextView textViewTelefono = (TextView) findViewById(R.id.textViewTelefono);
         TextView textViewLatitud = (TextView) findViewById(R.id.textViewLatitud);
         TextView textViewLongitud = (TextView) findViewById(R.id.textViewLongitud);
-        btnRegresa = (Button) findViewById(R.id.btnRegresa);
+        btnRegresa = (ImageButton) findViewById(R.id.btnRegresa);
 
         ds = new PropiedadesDataSource(getApplicationContext());
         if (propiedadI > 0) {
@@ -188,21 +191,20 @@ public class VerDetallePropiedad extends AppCompatActivity {
         textViewMunicipio.setText(municipio + ", ");
         textViewCP.setText("CP " + formatCP.format(modelItem.CP) + ", ");
         textViewEntidad.setText(entidad);
-        textViewVidaUtil.setText("Vida util " + formateador.format(modelItem.vidaUtil) + " meses");
-        textViewSuperficieTerreno.setText("Terreno " + formateador.format(modelItem.superTerreno) + " m2");
-        textViewSuperficieConstruccion.setText("Construcción " + formateador.format(modelItem.superConstruido) + " m2");
-        textViewValorConstruccion.setText("Valor de la construcción $" + formateador.format(modelItem.valConst));
-        textViewPrecio.setText("Precio $" + formateador.format(modelItem.valConcluido));
-        textViewProximidadUrbana.setText("Proximidad urbana: " + itemsProximidadUrbana[((int) modelItem.proximidadUrbana.doubleValue()) - 1]);
-        textViewTipologia.setText("Tipologia: " + itemsTipologia[((int) modelItem.tipologia.doubleValue()) - 1]);
-        textViewClaseInmueble.setText("Clase Inmueble: " + itemsClaseInmueble[((int) modelItem.claseInmueble.doubleValue()) - 1]);
-        double porcentaje = (100.0 * modelItem.valDesStn) / modelItem.valEstimado;
-        textViewValorEstimado.setText("Valor estimado $" + formateador.format(modelItem.valEstimado) + " +- " + formateador.format(porcentaje) + "%");
+        textViewVidaUtil.setText(              "Vida util       " + formateador.format(modelItem.vidaUtil) + " meses");
+        textViewSuperficieTerreno.setText(     "Terreno         " + formateador.format(modelItem.superTerreno) + " m2");
+        textViewSuperficieConstruccion.setText("Construcción  " + formateador.format(modelItem.superConstruido) + " m2");
+        textViewValorConstruccion.setText(     "Valor de la construcción   $" + formateador.format(modelItem.valConst));
+        textViewValorEstimado.setText(         "Valor estimado $" + formateador.format(modelItem.valEstimado) + " +- " + formateador.format(ValorEstimado.porcentaje(modelItem.valEstimado, modelItem.valDesStn)) + "%");
+        textViewPrecio.setText("Precio   $" + formateador.format(modelItem.valConcluido));
+        textViewProximidadUrbana.setText("Proximidad urbana:  " + itemsProximidadUrbana[((int) modelItem.proximidadUrbana.doubleValue()) - 1]);
+        textViewTipologia.setText(       "Tipologia:          " + itemsTipologia[((int) modelItem.tipologia.doubleValue()) - 1]);
+        textViewClaseInmueble.setText(   "Clase Inmueble:     " + itemsClaseInmueble[((int) modelItem.claseInmueble.doubleValue()) - 1]);
         textViewTelefono.setText(modelItem.telefono);
         textViewLatitud.setText("Lat: " + Double.toString(modelItem.latitud));
         textViewLongitud.setText("    Lon: " + Double.toString(modelItem.longitud));
 
-        btnEstima = (Button) findViewById(R.id.btnEstima);
+        btnEstima = (ImageButton) findViewById(R.id.btnEstima);
         btnEstima.setVisibility(View.INVISIBLE);
 
         if (modelItem.valEstimado == 0.0 ) {
@@ -252,8 +254,7 @@ public class VerDetallePropiedad extends AppCompatActivity {
                                 modelItem.valEstimado = res.getValorEstimado();
                                 modelItem.valDesStn = res.getDesStn();
                                 DecimalFormat formateador = new DecimalFormat("###,###");
-                                double porcentaje = (100.0 * modelItem.valDesStn) / modelItem.valEstimado;
-                                textViewValorEstimado.setText("Valor estimado $" + formateador.format(modelItem.valEstimado) + " +- " + formateador.format(porcentaje) + "%");
+                                textViewValorEstimado.setText("Valor estimado $" + formateador.format(modelItem.valEstimado) + " +- " + formateador.format(ValorEstimado.porcentaje(modelItem.valEstimado, modelItem.valDesStn)) + "%");
                                 // Es necesario actualizar la base de datos para que no sea necesario recalcular el valor estimado
                                 ds.updateApp(modelItem);
                             }
@@ -272,7 +273,7 @@ public class VerDetallePropiedad extends AppCompatActivity {
             });
         }
 
-        btnBorra = (Button) findViewById(R.id.btnBorra);
+        btnBorra = (ImageButton) findViewById(R.id.btnBorra);
         btnBorra.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -369,7 +370,7 @@ public class VerDetallePropiedad extends AppCompatActivity {
         canPresentShareDialogWithPhotos = ShareDialog.canShow(
                 SharePhotoContent.class);
 
-        btnComparte = (Button) findViewById(R.id.btnComparte);
+        btnComparte = (ImageButton) findViewById(R.id.btnComparte);
         btnComparte.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -381,6 +382,7 @@ public class VerDetallePropiedad extends AppCompatActivity {
                 //finish();
 
                 // Publicamos link
+                Toast.makeText(getApplicationContext(),"Compartimos con Facebook", Toast.LENGTH_LONG).show();
                 performPublish(PendingAction.POST_LINK, canPresentShareDialog);
                 finish();
             }
@@ -446,10 +448,13 @@ public class VerDetallePropiedad extends AppCompatActivity {
     }
 
     private void postLink() {
+
+        Calendar c = Calendar.getInstance();
+        SimpleDateFormat df = new SimpleDateFormat("(yyyy-MM-dd HH:mm:ss) ");
         ShareLinkContent content = new ShareLinkContent.Builder()
                 .setContentUrl(Uri.parse("http://avaluos.peta.mx"))
                 .setContentTitle("Está usando InmobiliaApp para lograr un buen trato para su nueva casa")
-                .setContentDescription("esta localización le gusta y está a buen precio\n" + "http://maps.google.com/maps?q=" + Double.toString(modelItem.latitud) + "," + Double.toString(modelItem.longitud))
+                .setContentDescription(df.format(c.getTime()) + " esta localización le gusta y está a buen precio " + "http://maps.google.com/maps?q=" + Double.toString(modelItem.latitud) + "," + Double.toString(modelItem.longitud))
                 .setImageUrl(Uri.parse("http://peta.mx/images/favicon/apple-icon-180x180.png"))
                 .build();
 

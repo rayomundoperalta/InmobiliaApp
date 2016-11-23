@@ -15,15 +15,15 @@
 
     <LinearLayout
         android:orientation="horizontal"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
         android:id="@+id/image"
         android:layout_weight="0.37">
 
         <ImageView
             android:layout_width="200dp"
             android:layout_height="200dp"
-            android:gravity="center_horizontal"
             android:id="@+id/imageView"
             app:srcCompat="@android:drawable/ic_menu_camera"
             />
@@ -97,18 +97,25 @@
             android:textColor="@color/negro"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
             android:id="@+id/textViewValorEstimado"
             android:layout_weight="1" />
 
-        <Button
-            android:text="Estima"
-            android:textSize="5dp"
+        <Space
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2" />
+
+        <ImageButton
+            android:src="@drawable/ic_monetization_on_black_24dp"
             android:textColor="@color/negro"
             android:background="@color/blanco"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             android:id="@+id/btnEstima"
             android:layout_weight="1"/>
+
     </LinearLayout>
 
     <TextView
@@ -218,33 +225,36 @@
         android:layout_weight="1">
 
         <!-- regresa -->
-        <Button
-            android:height="10dp"
-            android:width="10dp"
+        <ImageButton
+            android:height="30dp"
+            android:width="30dp"
             android:text=""
-            android:background="@drawable/ic_exit_to_app_black_24dp"
+            android:src="@drawable/ic_keyboard_arrow_left_black_24dp"
+            android:background="@color/blanco"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/btnRegresa"
             android:layout_weight="1" />
 
         <!-- borra -->
-        <Button
-            android:height="10dp"
-            android:width="10dp"
+        <ImageButton
+            android:height="30dp"
+            android:width="30dp"
             android:text=""
-            android:background="@drawable/ic_delete_forever_black_24dp"
+            android:src="@drawable/ic_delete_forever_black_24dp"
+            android:background="@color/blanco"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/btnBorra"
             android:layout_weight="1" />
 
         <!-- comparte -->
-        <Button
-            android:height="10dp"
-            android:width="10dp"
+        <ImageButton
+            android:height="30dp"
+            android:width="30dp"
             android:text=""
-            android:background="@drawable/ic_share_black_24dp"
+            android:src="@drawable/ic_share_black_24dp"
+            android:background="@color/blanco"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/btnComparte"

@@ -82,9 +82,8 @@ public class CapturaCategorias extends AppCompatActivity {
         if (propiedad.getValEstimado() > 0.0) {
             DecimalFormat formateador = new DecimalFormat("###,###");
             TextView textViewEstimacionValor = (TextView) findViewById(R.id.textViewEstimacionValor);
-            double porcentaje = (100.0 * propiedad.getValDesStn()) / propiedad.getValEstimado();
             textViewEstimacionValor.setText("Valor estimado $" + formateador.format(propiedad.getValEstimado()) + " +- " +
-                    formateador.format(porcentaje) + "%");
+                    formateador.format(ValorEstimado.porcentaje(propiedad.getValEstimado(), propiedad.getValDesStn())) + "%");
         }
     }
 
@@ -153,15 +152,9 @@ public class CapturaCategorias extends AppCompatActivity {
                                 propiedad.setValDesStn(res.getDesStn());
                                 DecimalFormat formateador = new DecimalFormat("###,###");
                                 TextView textViewEstimacionValor = (TextView) findViewById(R.id.textViewEstimacionValor);
-                                double porcentaje = (100.0 * res.getDesStn()) / res.getValorEstimado();
                                 textViewEstimacionValor.setText("Valor estimado $" + formateador.format(res.getValorEstimado()) + " +- " +
-                                        formateador.format(porcentaje) + "%");
+                                        formateador.format(ValorEstimado.porcentaje(res.getValorEstimado(), res.getDesStn())) + "%");
                             }
-                            //Toast.makeText(getApplicationContext(),"Avaluo válido " + res.getAvaluoValido().toString() + "\n " +
-                            //        "Valor estimado " + res.getValorEstimado().toString() + "\n " +
-                            //        "DS " + res.getDesStn().toString() + "\n " +
-                            //        res.getTipoModelo() + "\n " +
-                            //        res.getErrorStatus(), Toast.LENGTH_LONG).show();
                         }
 
                         @Override
@@ -172,9 +165,8 @@ public class CapturaCategorias extends AppCompatActivity {
                 } else {
                     DecimalFormat formateador = new DecimalFormat("###,###");
                     TextView textViewEstimacionValor = (TextView) findViewById(R.id.textViewEstimacionValor);
-                    double porcentaje = (100.0 * propiedad.getValDesStn()) / propiedad.getValEstimado();
                     textViewEstimacionValor.setText("Valor estimado $" + formateador.format(propiedad.getValEstimado()) + " +- " +
-                            formateador.format(porcentaje) + "%");
+                            formateador.format(ValorEstimado.porcentaje(propiedad.getValEstimado(), propiedad.getValDesStn())) + "%");
                 }
 
             }
