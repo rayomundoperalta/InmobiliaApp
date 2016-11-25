@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Handler;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -13,6 +14,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -35,6 +37,8 @@ import mx.peta.inmobiliaapp.SQL.PropiedadesSqLiteHelper;
 import mx.peta.inmobiliaapp.Servicios.LatLong;
 import mx.peta.inmobiliaapp.Servicios.ServicioGPS;
 
+import static mx.peta.inmobiliaapp.PaypalConstants.PAYPAL_SUCCEED;
+
 public class VistaInicial extends AppCompatActivity implements OnMapReadyCallback {
 
     //Defining Variables
@@ -48,6 +52,11 @@ public class VistaInicial extends AppCompatActivity implements OnMapReadyCallbac
     private LatLngBounds bounds;
 
     SupportMapFragment mapFragment;
+
+    private int cuantosRegistros;
+    private LatLng pos;
+
+    final int RESULT_OF_PAYMENT = 1960;
 
     @Override
     protected void onResume() {
@@ -103,25 +112,10 @@ public class VistaInicial extends AppCompatActivity implements OnMapReadyCallbac
                         Intent intent = new Intent(getApplicationContext(), CapturaEstadoMunicipio.class);
                         startActivity(intent);
                         return true;
-
-                    // For rest of the options we just show a toast on click
-                    /**
-                    case R.id.starred:
-                        Toast.makeText(getApplicationContext(),"Stared Selected",Toast.LENGTH_SHORT).show();
+                    case R.id.comprarEstimaciones:
+                        Intent intentb = new Intent(getApplicationContext(), InmobiliaPayPalPayment.class);
+                        startActivityForResult(intentb, RESULT_OF_PAYMENT);
                         return true;
-                    case R.id.sent_mail:
-                        Toast.makeText(getApplicationContext(),"Send Selected",Toast.LENGTH_SHORT).show();
-                        return true;
-                    case R.id.drafts:
-                        Toast.makeText(getApplicationContext(),"Drafts Selected",Toast.LENGTH_SHORT).show();
-                        return true;
-                    case R.id.allmail:
-                        Toast.makeText(getApplicationContext(),"All Mail Selected",Toast.LENGTH_SHORT).show();
-                        return true;
-                    case R.id.trash:
-                        Toast.makeText(getApplicationContext(),"Trash Selected",Toast.LENGTH_SHORT).show();
-                        return true;
-                    /**/
                     case R.id.fin:
                         finishAffinity();
                         return true;
@@ -161,6 +155,36 @@ public class VistaInicial extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        System.out.println("InmobiliaApp onActivityResult");
+        if (requestCode == RESULT_OF_PAYMENT) {
+            if (resultCode == RESULT_OK) {
+                System.out.println("InmobiliaApp Payment result");
+                switch (data.getIntExtra(PaypalConstants.PAYPAL_RESULT, PaypalConstants.DEFAULT_VALUE)) {
+                    case PaypalConstants.PAYPAL_SUCCEED:
+                        String payPalPayKey = data.getStringExtra(PaypalConstants.PAY_KEY);
+                        Toast.makeText(getApplicationContext(),"Pay Key: " + payPalPayKey, Toast.LENGTH_LONG).show();
+                        break;
+                    case PaypalConstants.PAYPAL_CANCELED:
+                        Toast.makeText(getApplicationContext(),"Pago Cancelado", Toast.LENGTH_LONG).show();
+                        break;
+                    case PaypalConstants.PAYPAL_ERROR:
+                        String payPalErrorMsg = data.getStringExtra(PaypalConstants.PAYPAL_ERROR_MSG);
+                        String payPalErrorID  = data.getStringExtra(PaypalConstants.PAYPAL_ERROR_ID);
+                        Toast.makeText(getApplicationContext(),"Error en el pago " + payPalErrorMsg + " " + payPalErrorID, Toast.LENGTH_LONG).show();
+                        break;
+                    case PaypalConstants.DEFAULT_VALUE:
+                        Toast.makeText(getApplicationContext(),"Tenemos problemas con la API de PayPal", Toast.LENGTH_LONG).show();
+                        break;
+                }
+            } else {
+                System.out.println("InmobiliaApp Error en el resultcode");
+            }
+        }
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
@@ -188,6 +212,30 @@ public class VistaInicial extends AppCompatActivity implements OnMapReadyCallbac
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
+        mMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
+            @Override
+            public void onMapLoaded() {
+                if (cuantosRegistros == 0) {
+                    // checar que no hay que hacer nada en este caso
+                } else {
+                    if (cuantosRegistros == 1) {
+                        cameraPosition = CameraPosition.builder()
+                                .target(pos)
+                                .zoom(15)
+                                .bearing(0)
+                                .build();
+                        mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+                    } else {
+                        cameraPosition = CameraPosition.builder()
+                                .target(bounds.getCenter())
+                                .bearing(0)
+                                .build();
+                        mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+                        mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 50));
+                    }
+                }
+            }
+        });
         System.out.println("Inmobilia Vista inicial onMapReady()");
         mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
             @Override
@@ -267,7 +315,7 @@ public class VistaInicial extends AppCompatActivity implements OnMapReadyCallbac
         });
 
         PropiedadesDataSource ds = new PropiedadesDataSource(getApplicationContext());
-        int cuantosRegistros = ds.cuantosRegistros(PropiedadesSqLiteHelper.APP_TABLE_NAME);
+        cuantosRegistros = ds.cuantosRegistros(PropiedadesSqLiteHelper.APP_TABLE_NAME);
         System.out.println("Inmobilia registros en la base de datos -> > " + cuantosRegistros);
         if (cuantosRegistros == 0) {
             ds.close();
@@ -294,7 +342,7 @@ public class VistaInicial extends AppCompatActivity implements OnMapReadyCallbac
             List<PropiedadesModelItem> listaPropiedades = ds.getAllItems();
             ds.close();
             LatLngBounds.Builder boundsBuilder = new LatLngBounds.Builder();
-            LatLng pos = null;
+            pos = null;
             for (PropiedadesModelItem item:listaPropiedades) {
                 pos = new LatLng(item.latitud, item.longitud);
                 System.out.println(pos.toString());
@@ -302,21 +350,6 @@ public class VistaInicial extends AppCompatActivity implements OnMapReadyCallbac
                 boundsBuilder.include(pos);
             }
             bounds = boundsBuilder.build();
-            if (cuantosRegistros == 1) {
-                cameraPosition = CameraPosition.builder()
-                        .target(pos)
-                        .zoom(15)
-                        .bearing(0)
-                        .build();
-                mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-            } else {
-                cameraPosition = CameraPosition.builder()
-                        .target(bounds.getCenter())
-                        .bearing(0)
-                        .build();
-                mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-                mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 50));
-            }
         }
     }
 }

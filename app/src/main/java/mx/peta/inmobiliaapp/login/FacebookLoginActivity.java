@@ -122,17 +122,27 @@ public class FacebookLoginActivity extends AppCompatActivity implements Facebook
 
     @Override
     public void onCancel() {
-        Snackbar.make(findViewById(android.R.id.content), "Se cancelo la operación", Snackbar.LENGTH_LONG).show();
+        Snackbar.make(findViewById(android.R.id.content), "Se cancelo la operación. Reinicie la aplicación.",
+                Snackbar.LENGTH_LONG).show();
     }
 
     @Override
     public void onError(FacebookException error) {
-        Snackbar.make(findViewById(android.R.id.content), "Rebisar la conexión a Internet", Snackbar.LENGTH_LONG).show();
+        Snackbar.make(findViewById(android.R.id.content), "Rebisar la conexión a Internet. Reinicie la aplicacion.",
+                Snackbar.LENGTH_LONG).show();
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         callbackManager.onActivityResult(requestCode,resultCode,data);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (ServicioGPS.getInstancia() != null) {
+            ServicioGPS.getInstancia().stopServiceGPS();
+        }
     }
 }

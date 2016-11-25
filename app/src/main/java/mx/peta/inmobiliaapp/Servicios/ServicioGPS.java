@@ -55,16 +55,6 @@ public class ServicioGPS extends Service implements LocationListener {
     }
 
     public void stopServiceGPS() {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
-        }
         locationManager.removeUpdates(this);
     }
 
@@ -99,10 +89,12 @@ public class ServicioGPS extends Service implements LocationListener {
                     //locationManager.removeUpdates(this);
                 }
             } else {
-                Toast.makeText(ctx, "Se requiere usar el GPS, por favor avilitelo.", Toast.LENGTH_LONG).show();
+                Toast.makeText(ctx, "Se requiere usar el GPS, por favor habilitelo. \n" +
+                        "Reinicie la aplicación.", Toast.LENGTH_LONG).show();
             }
         } else {
-            Toast.makeText(ctx, "Se requiere usar el GPS, por favor avilitelo.", Toast.LENGTH_LONG).show();
+            Toast.makeText(ctx, "Se requiere usar el GPS, por favor habilitelo. \n" +
+                    "Reinicie la aplicación.", Toast.LENGTH_LONG).show();
         }
     }
 

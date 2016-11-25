@@ -52,6 +52,17 @@ public class InternetConnection {
         return response;
     }
 
+    /**
+     // method to check if the device is connected to network
+     public boolean isOnline() {
+     ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+     NetworkInfo netInfo = cm.getActiveNetworkInfo();
+     if (netInfo != null && netInfo.isConnectedOrConnecting()) {
+     return true;
+     }
+     return false;
+     }
+     /**/
     public static boolean isOnLine() {
 
         //Runtime runtime = Runtime.getRuntime();
