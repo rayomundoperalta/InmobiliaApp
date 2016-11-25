@@ -12,7 +12,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="40dip"
+        android:layout_marginTop="50dip"
         android:textSize="16dip"
         android:textColor="@color/negro"
         android:text="Paquete de estimación"
@@ -26,8 +26,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/DescripciónProducto"
-        android:id="@+id/IVA"
-        android:layout_marginTop="40dp"/>
+        android:id="@+id/IVA" />
 
     <TextView
         android:text="Total"
@@ -36,13 +35,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/IVA"
-        android:id="@+id/total" />
+        android:id="@+id/total"
+        android:layout_marginTop="10dip"/>
 
     <TextView
         android:layout_height="wrap_content"
         android:textSize="16dip"
         android:layout_width="wrap_content"
-        android:layout_marginTop="40dip"
+        android:layout_marginTop="50dip"
         android:textColor="@color/negro"
         android:id="@+id/Precio"
         android:text="$0.00"
@@ -58,18 +58,20 @@
         android:layout_height="wrap_content"
         android:id="@+id/importeIVA"
         android:layout_toRightOf="@+id/DescripciónProducto"
-        android:layout_below="@+id/IVA"
+        android:layout_below="@+id/Precio"
         android:paddingLeft="10dip" />
 
     <TextView
         android:text="$0.0"
         android:textSize="16dp"
-        android:textColor="@color/negro"
+        android:textColor="@color/blanco"
+        android:background="@color/negro"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/importeTotal"
         android:layout_toRightOf="@+id/DescripciónProducto"
         android:layout_below="@+id/importeIVA"
-        android:paddingLeft="10dip"/>
+        android:paddingLeft="10dip"
+        android:layout_marginTop="10dip"/>
 
 </RelativeLayout>

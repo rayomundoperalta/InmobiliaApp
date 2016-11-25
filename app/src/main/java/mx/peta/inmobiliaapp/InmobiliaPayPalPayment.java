@@ -2,6 +2,7 @@ package mx.peta.inmobiliaapp;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.DecimalFormat;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -72,19 +73,25 @@ public class InmobiliaPayPalPayment extends Activity implements OnClickListener 
         // Set up all the Pizza-related strings
         _productDescription = "Paquete de estimaciones";
         ((TextView) findViewById(R.id.DescripciónProducto)).setText(_productDescription);
+        //DecimalFormat formateador = new DecimalFormat("###,###");
+        //formateador.setMaximumFractionDigits(2);
+        double priceAmount = 50.0 * 1.05;
+        _price = String.format("%.2f", priceAmount);
 
-        double priceAmount = 50.0;
-        _price = "50.00";
-
-        ((TextView) findViewById(R.id.Precio)).setText("$" + _price);
-
+        String buffer = String.format("%.2f", priceAmount);
+        ((TextView) findViewById(R.id.Precio)).setText("$" + buffer);
 
         _theSubtotal = priceAmount;// saving this here so we can access it later
         // to account for tax
-        _taxAmount = priceAmount * .08;
+        _taxAmount = priceAmount * .16;
 
         priceAmount += _taxAmount;
 
+        buffer = String.format("%.2f", _taxAmount);
+        ((TextView) findViewById(R.id.importeIVA)).setText("$" + buffer);
+
+        buffer = String.format("%.2f", priceAmount);
+        ((TextView) findViewById(R.id.importeTotal)).setText("$" + buffer);
         // insert the PayPal button
         // Check if the PayPal Library has been initialized yet. If it has, show
         // the "Pay with PayPal button"
@@ -283,6 +290,8 @@ public class InmobiliaPayPalPayment extends Activity implements OnClickListener 
                 .addView(launchPayPalButton);
         ((RelativeLayout) findViewById(R.id.RelativeLayout01))
                 .setGravity(Gravity.CENTER_HORIZONTAL);
+        ((RelativeLayout) findViewById(R.id.RelativeLayout01))
+                .setHorizontalGravity(Gravity.CENTER_HORIZONTAL);
         if (_progressDialogRunning) {
             _progressDialog.dismiss();
             _progressDialogRunning = false;
