@@ -17,4 +17,9 @@
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
+    <style name ="EstiloAlertas" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="android:background">@color/blanco</item>
+        <item name="android:textColor">@color/negro</item>
+    </style>
+
 </resources>

@@ -1,5 +1,7 @@
 package mx.peta.inmobiliaapp;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -18,6 +20,7 @@ import com.facebook.CallbackManager;
 import com.facebook.FacebookAuthorizationException;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
+import com.facebook.FacebookSdk;
 import com.facebook.Profile;
 import com.facebook.ProfileTracker;
 import com.facebook.login.LoginManager;
@@ -31,6 +34,7 @@ import com.facebook.share.widget.ShareDialog;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import java.io.File;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -40,10 +44,16 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
+import mx.peta.inmobiliaapp.SQL.EstimacionesCompradasDataSource;
+import mx.peta.inmobiliaapp.SQL.EstimacionesCompradasModelItem;
+import mx.peta.inmobiliaapp.SQL.EstimacionesDataSource;
+import mx.peta.inmobiliaapp.SQL.EstimacionesModelItem;
+import mx.peta.inmobiliaapp.SQL.EstimacionesSqLiteHelper;
 import mx.peta.inmobiliaapp.SQL.PropiedadesDataSource;
 import mx.peta.inmobiliaapp.SQL.PropiedadesModelItem;
 import mx.peta.inmobiliaapp.expandablelistview.CatalogoEstadoMunicipio;
 import mx.peta.inmobiliaapp.expandablelistview.Municipio;
+import mx.peta.inmobiliaapp.login.FacebookLoginActivity;
 import mx.peta.inmobiliaapp.validadorWebService.AvaluoValido;
 import mx.peta.inmobiliaapp.validadorWebService.AvaluoValidoJsonResult;
 import mx.peta.inmobiliaapp.validadorWebService.EndPointsInterface;
@@ -65,27 +75,31 @@ public class VerDetallePropiedad extends AppCompatActivity {
     private ImageButton btnBorra;
     private ImageButton btnComparte;
     private PropiedadesDataSource ds = null;
+    EstimacionesDataSource dsEstimadores = null;
     private Bitmap bitmap;
 
     private final String PENDING_ACTION_BUNDLE_KEY =
             "mx.peta.inmobiliaapp:PendingAction";
     private PendingAction pendingAction = PendingAction.NONE;
 
+    final int RESULT_OF_PAYMENT = 1960;
+
     private static final String PERMISSION = "publish_actions";
     private boolean canPresentShareDialog;
     private boolean canPresentShareDialogWithPhotos;
     private ShareDialog shareDialog;
     private ProfileTracker profileTracker;
+
     private CallbackManager callbackManager;
     private FacebookCallback<Sharer.Result> shareCallback = new FacebookCallback<Sharer.Result>() {
         @Override
         public void onCancel() {
-            showResult("Inmobilia", "onCancel");
+            showResult("Facebook callback", "onCancel");
         }
 
         @Override
         public void onError(FacebookException error) {
-            String title = "Inmobilia";
+            String title = "Facebook exception";
             String alertMessage = error.getMessage();
             showResult(title, alertMessage);
         }
@@ -93,7 +107,7 @@ public class VerDetallePropiedad extends AppCompatActivity {
         @Override
         public void onSuccess(Sharer.Result result) {
             if (result.getPostId() != null) {
-                String title = "Inmobilia lo logro";
+                String title = "lo logró";
                 String id = result.getPostId();
                 String alertMessage = "Inmobilia share facebook successfully_posted_post " + id;
                 showResult(title, alertMessage);
@@ -101,7 +115,7 @@ public class VerDetallePropiedad extends AppCompatActivity {
         }
 
         private void showResult(String title, String alertMessage) {
-            System.out.println("Inmobilia " + title + " " + alertMessage);
+            System.out.println("InmobiliaApp Ver detalle propiedad " + title + " " + alertMessage);
             /**
             new AlertDialog.Builder(VerDetallePropiedad.this)
                     .setTitle(title)
@@ -127,7 +141,7 @@ public class VerDetallePropiedad extends AppCompatActivity {
         if (savedInstanceState == null) {
             Bundle extras = getIntent().getExtras();
             if(extras == null) {
-                System.out.println("Inmobilia estamos pasando mal el id de la propiedad");
+                System.out.println("InmobiliaApp Ver detalle propiedad estamos pasando mal el id de la propiedad");
             } else {
                 propiedadI = extras.getInt("MARKER_TAG");
             }
@@ -158,7 +172,7 @@ public class VerDetallePropiedad extends AppCompatActivity {
         if (propiedadI > 0) {
             modelItem = ds.getRegistro(propiedadI);
         } else {
-            System.out.println("Inmobilia error al aceder a la bd sqlite id index == 0");
+            System.out.println("InmobiliaApp Ver detalle propiedad error al aceder a la bd sqlite id index == 0");
         }
 
         BitmapFactory.Options bmOptions = new BitmapFactory.Options();
@@ -184,7 +198,7 @@ public class VerDetallePropiedad extends AppCompatActivity {
         HashMap<String, List<Municipio>> catalogo = CatalogoEstadoMunicipio.getInstance();
         List<String> expandableListTitle = new ArrayList<String>(catalogo.keySet());
         Collections.sort(expandableListTitle);
-        System.out.println("Inmobilia " + expandableListTitle.toString());
+        System.out.println("InmobiliaApp Ver detalle propiedad " + expandableListTitle.toString());
         String entidad = expandableListTitle.get(modelItem.groupPosition);
         String municipio = catalogo.get(entidad).get(modelItem.childPosition).getNombreMunicipio();
         textViewDireccion.setText(modelItem.direccion);
@@ -214,61 +228,100 @@ public class VerDetallePropiedad extends AppCompatActivity {
                 public void onClick(View view) {
                     // Ya se ha terminado la captura de la información
                     // es necesario llamar al web service para conocer el valor del inmueble
-                    final String BASE_URL = "http://valjson.artica.com.mx/";
-                    Gson gson = new GsonBuilder()
-                            .setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
-                            .create();
-                    Retrofit retrofit = new Retrofit.Builder()
-                            .baseUrl(BASE_URL)
-                            .addConverterFactory(GsonConverterFactory.create(gson))
-                            .build();
-                    EndPointsInterface apiService = retrofit.create(EndPointsInterface.class);
-                    //tipologia=2
-                    //&CP=4318&delegacion=9003&entidad=9&proximidadUrbana=1&claseInmueble=5&vidautil=720&superTerreno=400&superConstruido=400
-                    // &valConst=4000000&valConcluido=8000000&revisadoManualmente=0&USER=rayo&PASSWORD=rayo&sensibilidad=3.5
-                    modelItem.sensibilidad = 4.0;
-                    Call<AvaluoValido> callApiService = apiService.getAvaluo(
-                            modelItem.tipologia,
-                            modelItem.CP,
-                            modelItem.delegacion + modelItem.entidad * 1000.0,
-                            modelItem.entidad,
-                            modelItem.proximidadUrbana,
-                            modelItem.claseInmueble,
-                            modelItem.vidaUtil,
-                            modelItem.superTerreno,
-                            modelItem.superConstruido,
-                            modelItem.valConst,
-                            modelItem.valConcluido,
-                            modelItem.revisadoManualment,
-                            "rayo",
-                            "rayo",
-                            modelItem.sensibilidad);
-                    callApiService.enqueue(new Callback<AvaluoValido>() {
-                        @Override
-                        public void onResponse(Call<AvaluoValido> call, Response<AvaluoValido> response) {
-                            if (response == null) {
-                                Toast.makeText(getApplicationContext(), "Volver a intentar mas tarde calcular el valor estimado", Toast.LENGTH_LONG).show();
-                            } else {
-                                btnEstima.setVisibility(View.INVISIBLE);
-                                AvaluoValidoJsonResult res = response.body().getAvaluoValidoJsonResult();
-                                modelItem.valEstimado = res.getValorEstimado();
-                                modelItem.valDesStn = res.getDesStn();
-                                DecimalFormat formateador = new DecimalFormat("###,###");
-                                textViewValorEstimado.setText("Valor estimado $" + formateador.format(modelItem.valEstimado) + " +- " + formateador.format(ValorEstimado.porcentaje(modelItem.valEstimado, modelItem.valDesStn)) + "%");
-                                // Es necesario actualizar la base de datos para que no sea necesario recalcular el valor estimado
-                                ds.updateApp(modelItem);
+                    // Lo cual solo se hace si tiene estimaciones compradas disponibles
+                    dsEstimadores = new EstimacionesDataSource(getApplicationContext());
+                    final int cuantasEstimaciones = dsEstimadores.getRegistro().estimaciones;
+                    if (cuantasEstimaciones > 0) {
+                        final String BASE_URL = "http://valjson.artica.com.mx/";
+                        Gson gson = new GsonBuilder()
+                                .setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
+                                .create();
+                        Retrofit retrofit = new Retrofit.Builder()
+                                .baseUrl(BASE_URL)
+                                .addConverterFactory(GsonConverterFactory.create(gson))
+                                .build();
+                        EndPointsInterface apiService = retrofit.create(EndPointsInterface.class);
+                        //tipologia=2
+                        //&CP=4318&delegacion=9003&entidad=9&proximidadUrbana=1&claseInmueble=5&vidautil=720&superTerreno=400&superConstruido=400
+                        // &valConst=4000000&valConcluido=8000000&revisadoManualmente=0&USER=rayo&PASSWORD=rayo&sensibilidad=3.5
+                        modelItem.sensibilidad = 4.0;
+                        Call<AvaluoValido> callApiService = apiService.getAvaluo(
+                                modelItem.tipologia,
+                                modelItem.CP,
+                                modelItem.delegacion + modelItem.entidad * 1000.0,
+                                modelItem.entidad,
+                                modelItem.proximidadUrbana,
+                                modelItem.claseInmueble,
+                                modelItem.vidaUtil,
+                                modelItem.superTerreno,
+                                modelItem.superConstruido,
+                                modelItem.valConst,
+                                modelItem.valConcluido,
+                                modelItem.revisadoManualment,
+                                "rayo",
+                                "rayo",
+                                modelItem.sensibilidad);
+                        callApiService.enqueue(new Callback<AvaluoValido>() {
+                            @Override
+                            public void onResponse(Call<AvaluoValido> call, Response<AvaluoValido> response) {
+                                if (response == null) {
+                                    Toast.makeText(getApplicationContext(), "Volver a intentar mas tarde calcular el valor estimado", Toast.LENGTH_LONG).show();
+                                } else {
+                                    AvaluoValidoJsonResult res = response.body().getAvaluoValidoJsonResult();
+                                    modelItem.valEstimado = res.getValorEstimado();
+                                    if (modelItem.valEstimado > 10) {
+                                        btnEstima.setVisibility(View.INVISIBLE);
+                                        dsEstimadores.updateEstimaciones(cuantasEstimaciones - 1);
+                                    } else {
+                                        new AlertDialog.Builder(VerDetallePropiedad.this, R.style.EstiloAlertas)
+                                                .setTitle("Calculo de estimaciones")
+                                                .setMessage("No tenemos información en esta zona.")
+                                                .setPositiveButton("ok", null)
+                                                .show();
+                                    }
+                                    dsEstimadores.close();
+                                    modelItem.valDesStn = res.getDesStn();
+                                    DecimalFormat formateador = new DecimalFormat("###,###");
+                                    textViewValorEstimado.setText("Valor estimado $" + formateador.format(modelItem.valEstimado) + " +- " + formateador.format(ValorEstimado.porcentaje(modelItem.valEstimado, modelItem.valDesStn)) + "%");
+                                    // Es necesario actualizar la base de datos para que no sea necesario recalcular el valor estimado
+                                    ds.updateApp(modelItem);
+                                }
+                                //Toast.makeText(getApplicationContext(),"Avaluo válido " + res.getAvaluoValido().toString() + "\n " +
+                                //        "Valor estimado " + res.getValorEstimado().toString() + "\n " +
+                                //        "DS " + res.getDesStn().toString() + "\n " +
+                                //        res.getTipoModelo() + "\n " +
+                                //        res.getErrorStatus(), Toast.LENGTH_LONG).show();
                             }
-                            //Toast.makeText(getApplicationContext(),"Avaluo válido " + res.getAvaluoValido().toString() + "\n " +
-                            //        "Valor estimado " + res.getValorEstimado().toString() + "\n " +
-                            //        "DS " + res.getDesStn().toString() + "\n " +
-                            //        res.getTipoModelo() + "\n " +
-                            //        res.getErrorStatus(), Toast.LENGTH_LONG).show();
-                        }
 
-                        @Override
-                        public void onFailure(Call<AvaluoValido> call, Throwable t) {
-                        }
-                    });
+                            @Override
+                            public void onFailure(Call<AvaluoValido> call, Throwable t) {
+                                Toast.makeText(getApplicationContext(), "Volver a intentar mas tarde calcular el valor estimado", Toast.LENGTH_LONG).show();
+                                dsEstimadores.close();
+                            }
+                        });
+                    } else {
+                        dsEstimadores.close();
+                        new AlertDialog.Builder(VerDetallePropiedad.this, R.style.EstiloAlertas)
+                                .setTitle("Compra de Estimaciones")
+                                .setMessage("No tiene estimaciones disponibles, ¿desea comprar?")
+                                .setPositiveButton("Si", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        /* Se llama a pay pal para que cliente haga el pago por las estimaciones */
+                                        Intent intentb = new Intent(getApplicationContext(), InmobiliaPayPalPayment.class);
+                                        startActivityForResult(intentb, RESULT_OF_PAYMENT);
+                                    }
+                                })
+                                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        /* No hay que hacer nada */
+                                    }
+                                })
+                                .show();
+                    }
+
                 }
             });
         }
@@ -277,6 +330,8 @@ public class VerDetallePropiedad extends AppCompatActivity {
         btnBorra.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                File fileToBedeleted = new File(modelItem.photoFileName);
+                fileToBedeleted.delete();
                 ds.deleteRegistro(modelItem);
                 finish();
             }
@@ -294,7 +349,7 @@ public class VerDetallePropiedad extends AppCompatActivity {
             Aqui empieza el codigo para compartir información en Facebook
          */
 
-        //FacebookSdk.sdkInitialize(this.getApplicationContext());
+        // FacebookSdk.sdkInitialize(this.getApplicationContext(), REQUESTCODE_FACEBOOK_OFFSET);
 
         AccessToken accessToken = AccessToken.getCurrentAccessToken();
         callbackManager = CallbackManager.Factory.create();
@@ -303,7 +358,7 @@ public class VerDetallePropiedad extends AppCompatActivity {
                 new FacebookCallback<LoginResult>() {
                     @Override
                     public void onSuccess(LoginResult loginResult) {
-                        System.out.println("Inmobila Login manager success");
+                        System.out.println("InmobilaApp Ver detalle propiedad Login manager success");
                         /**
                         new AlertDialog.Builder(VerDetallePropiedad.this)
                                 .setTitle("Login manager")
@@ -332,7 +387,7 @@ public class VerDetallePropiedad extends AppCompatActivity {
                     }
 
                     private void showAlert() {
-                        System.out.println("Inmobilia " + "petición cancelada");
+                        System.out.println("InmobiliaApp Ver detalle propiedad " + "petición cancelada");
                         /**
                         new AlertDialog.Builder(VerDetallePropiedad.this)
                                 .setTitle("Cancelada")
@@ -382,9 +437,7 @@ public class VerDetallePropiedad extends AppCompatActivity {
                 //finish();
 
                 // Publicamos link
-                Toast.makeText(getApplicationContext(),"Compartimos con Facebook", Toast.LENGTH_LONG).show();
                 performPublish(PendingAction.POST_LINK, canPresentShareDialog);
-                finish();
             }
         });
     }
@@ -512,7 +565,66 @@ public class VerDetallePropiedad extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        callbackManager.onActivityResult(requestCode, resultCode, data);
+        if (FacebookSdk.isFacebookRequestCode(requestCode)) {
+            System.out.println("InmobiliaApp Ver detalles propiedad resultado de Facebook");
+            callbackManager.onActivityResult(requestCode, resultCode, data);
+        }
+        else {
+            System.out.println("InmobiliaApp Vista Inicial onActivityResult vista inicial");
+            if (requestCode == RESULT_OF_PAYMENT) {
+                System.out.println("InmobiliaApp Ver detalles propiedad RESULT Of Payment recibido");
+                if (resultCode == RESULT_OK) {
+                    System.out.println("InmobiliaApp Payment result ok");
+                    switch (data.getIntExtra(PaypalConstants.PAYPAL_RESULT, PaypalConstants.DEFAULT_VALUE)) {
+                        case PaypalConstants.PAYPAL_SUCCEED:
+                            String payPalPayKey = data.getStringExtra(PaypalConstants.PAY_KEY);
+                            System.out.println("InmobiliaApp Ver detalles propiedad Pay Key: " + payPalPayKey);
+
+                            EstimacionesCompradasDataSource ds = new EstimacionesCompradasDataSource(getApplicationContext());
+                            Calendar c = Calendar.getInstance();
+                            SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                            EstimacionesCompradasModelItem modelItem = new EstimacionesCompradasModelItem(df.format(c.getTime()), payPalPayKey);
+                            ds.writeRegistro(modelItem);
+                            ds.close();
+                            EstimacionesDataSource estimacionesDS = new EstimacionesDataSource(getApplicationContext());
+                            switch (estimacionesDS.cuantosRegistros(EstimacionesSqLiteHelper.APP_TABLE_NAME)) {
+                                case 0: // Es la primera vez que se va a escribir un registro a esta tabla
+                                    EstimacionesModelItem estimacionesModelItem = new EstimacionesModelItem(3);
+                                    estimacionesDS.writeRegistro(estimacionesModelItem);
+                                    estimacionesDS.close();
+                                    System.out.println("InmobiliaApp Ver detalles propiedad Se cargaron 3 estimaciones");
+                                    break;
+                                case 1: // siempre debe existir solo un registro
+                                    estimacionesModelItem = estimacionesDS.getRegistro();
+                                    estimacionesModelItem.estimaciones += 3;
+                                    estimacionesDS.updateEstimaciones(estimacionesModelItem.estimaciones);
+                                    estimacionesDS.close();
+                                    System.out.println("InmobiliaApp Ver detalles propiedad Se adicionaron 3 estimaciones, total = " + estimacionesModelItem.estimaciones);
+                                    break;
+                                default: // Existe un error en la lógica
+                                    Toast.makeText(getApplicationContext(), "Favor de reinstalar la aplicación", Toast.LENGTH_LONG).show();
+                                    System.out.println("InmobiliaApp Vista Inicial --> E R R O R   en el manejo de la tabla de estimaciones <--");
+                            }
+                            EstimacionesModelItem estimacionesModelItem = new EstimacionesModelItem(0);
+                            break;
+                        case PaypalConstants.PAYPAL_CANCELED:
+                            System.out.println("InmobiliaApp Ver detalles propiedad Pago Cancelado");
+                            break;
+                        case PaypalConstants.PAYPAL_ERROR:
+                            String payPalErrorMsg = data.getStringExtra(PaypalConstants.PAYPAL_ERROR_MSG);
+                            String payPalErrorID  = data.getStringExtra(PaypalConstants.PAYPAL_ERROR_ID);
+                            Toast.makeText(getApplicationContext(),"Error en el pago " + payPalErrorMsg + " " + payPalErrorID, Toast.LENGTH_LONG).show();
+                            System.out.println("InmobiliaApp Ver detalles propiedad Error en el pago " + payPalErrorMsg);
+                            break;
+                        case PaypalConstants.DEFAULT_VALUE:
+                            System.out.println("InmobiliaApp Ver detalles propiedad Tenemos problemas con la API de PayPal");
+                            break;
+                    }
+                } else {
+                    System.out.println("InmobiliaApp Ver detalles propiedad Error en el resultcode");
+                }
+            }
+        }
     }
 
     @Override

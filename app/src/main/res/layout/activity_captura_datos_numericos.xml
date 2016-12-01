@@ -182,15 +182,32 @@
 
         <Button
             android:text="Siguiente"
-            android:layout_width="150dp"
+            android:layout_width="120dp"
             android:layout_height="5dp"
             android:gravity="center"
             android:background="@color/colorPrimary"
             android:textColor="@color/blanco"
             android:id="@+id/btnSiguiente"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            style="@style/Widget.AppCompat.Button"/>
 
     </LinearLayout>
+<!--
+    android:gravity="center"
+
+    android:layout_marginLeft="50dp"
+    android:text="Guardar"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:id="@+id/btnGuardar"
+    android:layout_below="@+id/coordenadas"
+    android:layout_gravity="right"
+    android:layout_weight="0.14"
+    android:background="@color/colorPrimary"
+    android:textColor="@color/blanco"
+
+    style="@style/Widget.AppCompat.Button"
+    -->
 
     <android.support.design.widget.NavigationView
         android:id="@+id/navigation_view"

@@ -39,6 +39,8 @@ public class FacebookLoginActivity extends AppCompatActivity implements Facebook
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        System.out.println("InmobiliaApp FBlogin --->" + this.getClass().getName() + "<---");
+        System.out.println("InmobiliaApp FBlogin comenzamos en el onCreeate de login.facebook");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_facebook_login);
 
@@ -49,7 +51,7 @@ public class FacebookLoginActivity extends AppCompatActivity implements Facebook
             for (Signature signature : info.signatures) {
                 MessageDigest md = MessageDigest.getInstance("SHA");
                 md.update(signature.toByteArray());
-                System.out.println("Inmobilia KeyHash:" + Base64.encodeToString(md.digest(), Base64.DEFAULT));
+                System.out.println("InmobiliaApp FBlogin KeyHash:" + Base64.encodeToString(md.digest(), Base64.DEFAULT));
             }
         } catch (PackageManager.NameNotFoundException e) {
 
@@ -79,6 +81,7 @@ public class FacebookLoginActivity extends AppCompatActivity implements Facebook
                         })
                         .show();
             } else {
+                System.out.println("InmobiliaApp FBlogin Vamos a realizar el login con facebook");
                 ServicioGPS.getInstancia(getApplicationContext());  // Inicializamon el gps
                 loginButton = (LoginButton) findViewById(R.id.fb_login_button);
             /*
@@ -94,10 +97,11 @@ public class FacebookLoginActivity extends AppCompatActivity implements Facebook
 
                 AccessToken accessToken = AccessToken.getCurrentAccessToken();
                 if (AccessToken.getCurrentAccessToken() != null) {
-                    System.out.println("Inmobilia tenemos una sesión abierta");
+                    System.out.println("InmobiliaApp FBlogin tenemos una sesión abierta");
                     startActivity(new Intent(this, VistaInicial.class));
+                    System.out.println("InmobiliaApp FBlogin Se lanzó VistaInicial 1");
                 }
-                System.out.println("Inmobilia Inicializamos el catalogo durante el splas");
+                System.out.println("InmobiliaApp FBlogin Inicializamos el catalogo durante el splash");
             }
         } else {
             new AlertDialog.Builder(FacebookLoginActivity.this)
@@ -111,35 +115,41 @@ public class FacebookLoginActivity extends AppCompatActivity implements Facebook
                     })
                     .show();
         }
+        System.out.println("InmobiliaApp FBlogin termino de ejecutar onCreate");
     }
 
     @Override
     public void onSuccess(LoginResult loginResult) {
         AccessToken accessToken = AccessToken.getCurrentAccessToken();
-        System.out.println("Inmobilia entramos por onSuccess");
+        System.out.println("InmobiliaApp FBlogin entramos por onSuccess");
         startActivity(new Intent(this, VistaInicial.class));
+        System.out.println("InmobiliaApp FBlogin Se lanzó VistaInicial 2");
     }
 
     @Override
     public void onCancel() {
+        System.out.println("InmobiliaApp FBlogin se llamo onCancel en login.Facebook");
         Snackbar.make(findViewById(android.R.id.content), "Se cancelo la operación. Reinicie la aplicación.",
                 Snackbar.LENGTH_LONG).show();
     }
 
     @Override
     public void onError(FacebookException error) {
+        System.out.println("InmobiliaApp FBlogin se llamo onError en login.Facebook");
         Snackbar.make(findViewById(android.R.id.content), "Rebisar la conexión a Internet. Reinicie la aplicacion.",
                 Snackbar.LENGTH_LONG).show();
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        System.out.println("InmobiliaApp FBlogin se llamo onActivityResult");
         super.onActivityResult(requestCode, resultCode, data);
         callbackManager.onActivityResult(requestCode,resultCode,data);
     }
 
     @Override
     public void onDestroy() {
+        System.out.println("InmobiliaApp FBlogin  se llamo onDestroy");
         super.onDestroy();
         if (ServicioGPS.getInstancia() != null) {
             ServicioGPS.getInstancia().stopServiceGPS();

@@ -45,20 +45,20 @@ public class InmobiliaPayPalPayment extends Activity implements OnClickListener 
     @Override
     public void onResume() {
         super.onResume();
-        System.out.println("InmobiliaApp on resume");
+        System.out.println("InmobiliaApp PayPalPayment on resume");
         if (PayPal.getInstance() == null)
-            System.out.println("InmobiliaApp PayPal no esta inicializado");
+            System.out.println("InmobiliaApp PayPalPayment no esta inicializado");
         loadReviewPage();
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        System.out.println("InmobiliaApp onCreate");
+        System.out.println("InmobiliaApp PayPalPayment onCreate");
         super.onCreate(savedInstanceState);
         // Initialize the library.
         Thread libraryInitializationThread = new Thread() {
             public void run() {
-                System.out.println("InmobiliaApp corremos la inicialización");
+                System.out.println("InmobiliaApp PayPalPayment corremos la inicialización");
                 initLibrary();
             }
         };
@@ -66,7 +66,7 @@ public class InmobiliaPayPalPayment extends Activity implements OnClickListener 
     }
 
     public void loadReviewPage() {
-        System.out.println("InmobiliaApp loadReviewPage");
+        System.out.println("InmobiliaApp PayPalPayment loadReviewPage");
         setContentView(R.layout.activity_pay_pal_payment);
 
         // Do all our setup of the Review page
@@ -98,10 +98,10 @@ public class InmobiliaPayPalPayment extends Activity implements OnClickListener 
         // If not, show a progress indicator and start a loop that keeps
         // checking the init status
         if (_paypalLibraryInit) {
-            System.out.println("InmobiliaApp Encontre inicializada la libreria");
+            System.out.println("InmobiliaApp PayPalPayment Encontre inicializada la libreria");
             showPayPalButton();
         } else {
-            System.out.println("InmobiliaApp No está inicializada la libreria <-----------------");
+            System.out.println("InmobiliaApp PayPalPayment No está inicializada la libreria <-----------------");
             // Display a progress dialog to the user and start checking for when
             // the initialization is completed
             _progressDialog = new ProgressDialog(this);
@@ -120,9 +120,9 @@ public class InmobiliaPayPalPayment extends Activity implements OnClickListener 
     // Payments Library
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
-        System.out.println("InmobiliaApp onActivityResult");
+        System.out.println("InmobiliaApp PayPalPayment onActivityResult");
         if (requestCode == REQUEST_PAYPAL_CHECKOUT) {
-            System.out.println("InmobiliaApp Payment result");
+            System.out.println("InmobiliaApp PayPalPayment Payment result");
             PayPalActivityResult(requestCode, resultCode, intent);
         } else {
             super.onActivityResult(requestCode, resultCode, intent);
@@ -132,15 +132,15 @@ public class InmobiliaPayPalPayment extends Activity implements OnClickListener 
     @Override
     public void onClick(View arg0) {
         if (arg0 == (CheckoutButton) findViewById(PAYPAL_BUTTON_ID)) {
-            System.out.println("InmobiliaApp se va a hacer el pago - onClick");
+            System.out.println("InmobiliaApp PayPalPayment se va a hacer el pago - onClick");
             PayPalButtonClick(arg0);
         }
     }
 
     public void paymentSucceeded(String payKey) {
         // We could show the transactionID to the user
-        System.out.println("InmobiliaApp   S u c c e s s !");
-        System.out.println("InmobiliaApp Payment Key: " + payKey);
+        System.out.println("InmobiliaApp PayPalPayment   S u c c e s s !");
+        System.out.println("InmobiliaApp PayPalPayment Payment Key: " + payKey);
         Intent intent = new Intent();
         intent.putExtra(PaypalConstants.PAYPAL_RESULT, PaypalConstants.PAYPAL_SUCCEED);
         intent.putExtra(PaypalConstants.PAY_KEY, payKey);
@@ -150,9 +150,9 @@ public class InmobiliaPayPalPayment extends Activity implements OnClickListener 
 
     public void paymentFailed(String errorID, String errorMessage) {
         // We could let the user know the payment failed here
-        System.out.println("InmobiliaApp payment Failure");
-        System.out.println("InmobiliaApp Error: " + errorMessage);
-        System.out.println("InmobiliaApp Error ID: "	+ errorID);
+        System.out.println("InmobiliaApp PayPalPayment payment Failure");
+        System.out.println("InmobiliaApp PayPalPayment Error: " + errorMessage);
+        System.out.println("InmobiliaApp PayPalPayment Error ID: "	+ errorID);
         Intent intent = new Intent();
         intent.putExtra(PaypalConstants.PAYPAL_RESULT, PaypalConstants.PAYPAL_ERROR);
         intent.putExtra(PaypalConstants.PAYPAL_ERROR_MSG, errorMessage);
@@ -162,7 +162,7 @@ public class InmobiliaPayPalPayment extends Activity implements OnClickListener 
 
     public void paymentCanceled() {
         // We could tell the user that the payment was canceled
-        System.out.println("InmobiliaApp payment Canceled.");
+        System.out.println("InmobiliaApp PayPalPayment payment Canceled.");
         Intent intent = new Intent();
         intent.putExtra(PaypalConstants.PAYPAL_RESULT, PaypalConstants.PAYPAL_CANCELED);
         setResult(RESULT_OK, intent);
@@ -193,13 +193,13 @@ public class InmobiliaPayPalPayment extends Activity implements OnClickListener 
     private void checkForPayPalLibraryInit() {
         // Loop as long as the library is not initialized
         while (_paypalLibraryInit == false) {
-            System.out.println("InmobiliaApp estoy verificando que pay pal este inicializado");
+            System.out.println("InmobiliaApp PayPalPayment estoy verificando que pay pal este inicializado");
             try {
                 // wait 1/2 a second then check again
                 Thread.sleep(500);
             } catch (InterruptedException e) {
                 // Show an error to the user
-                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.EstiloAlertas);
                 builder.setMessage("Error initializing PayPal Library")
                         .setCancelable(false)
                         .setPositiveButton("OK",
@@ -227,7 +227,7 @@ public class InmobiliaPayPalPayment extends Activity implements OnClickListener 
      *         false if
      */
     public void initLibrary() {
-        System.out.println("InmobiliaApp initLibrary");
+        System.out.println("InmobiliaApp PayPalPayment initLibrary");
         PayPal pp = PayPal.getInstance();
         // If the library is already initialized, then we don't need to
         // initialize it again.
@@ -256,9 +256,9 @@ public class InmobiliaPayPalPayment extends Activity implements OnClickListener 
             pp.setDynamicAmountCalculationEnabled(false);
             // --
             _paypalLibraryInit = true;
-            System.out.println("InmobiliaApp Libreria inicializada");
+            System.out.println("InmobiliaApp PayPalPayment Libreria inicializada");
         } else {
-            System.out.println("InmobiliaApp La libreria ya estaba inicializada");
+            System.out.println("InmobiliaApp PayPalPayment La libreria ya estaba inicializada");
             _paypalLibraryInit = true;
         }
     }
@@ -312,7 +312,7 @@ public class InmobiliaPayPalPayment extends Activity implements OnClickListener 
      * - this must be called from the onClick() method implemented by the application
      */
     public void PayPalButtonClick(View arg0) {
-        System.out.println("InmobiliaApp detectamos el click del PayPalButton");
+        System.out.println("InmobiliaApp PayPalPayment detectamos el click del PayPalButton");
         // Create a basic InmobiliaPayPalPayment.
         PayPalPayment payment = new PayPalPayment();
         // Sets the currency type for this payment.
@@ -373,7 +373,7 @@ public class InmobiliaPayPalPayment extends Activity implements OnClickListener 
         // Intent.
         // This will start the library.
         startActivityForResult(checkoutIntent, REQUEST_PAYPAL_CHECKOUT);
-        System.out.println("InmobiliaApp se llamó a la rutina de PayPal que hace el pago");
+        System.out.println("InmobiliaApp PayPalPayment se llamó a la rutina de PayPal que hace el pago");
     }
 
     /* This method handles the PayPal Activity Results. This handles all the responses from the PayPal

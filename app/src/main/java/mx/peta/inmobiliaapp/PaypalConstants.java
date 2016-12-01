@@ -4,7 +4,7 @@ package mx.peta.inmobiliaapp;
  * Created by rayo on 11/24/16.
  */
 
-public class PaypalConstants {
+public final class PaypalConstants {
     final static String PAYPAL_RESULT  = "paypal_result";
     final static String PAY_KEY        = "payKey";
     final static String PAYPAL_ERROR_MSG = "mensajeDeError";

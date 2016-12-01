@@ -13,6 +13,8 @@ import mx.peta.inmobiliaapp.Servicios.ServicioGPS;
  */
 
 public class InmobiliaApp extends Application {
+    final int REQUESTCODE_FACEBOOK_OFFSET = 1000; // Facebook usa en rango 1000 - 1100
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -20,8 +22,7 @@ public class InmobiliaApp extends Application {
         /*
             Se puede invocar el metodo getInstance de un singleton con el argumento  Context.getApplicationContext() as a Context argument
          */
-        FacebookSdk.sdkInitialize(getApplicationContext());
+        FacebookSdk.sdkInitialize(getApplicationContext(), REQUESTCODE_FACEBOOK_OFFSET);
         AppEventsLogger.activateApp(this);
-        // ServicioGPS.getInstancia(getApplicationContext());  // Inicializamon el gps
     }
 }
