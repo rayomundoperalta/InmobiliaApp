@@ -47,6 +47,9 @@ public class ServicioGPS extends Service implements LocationListener {
     private boolean gpsActivo = false;
     private LocationManager locationManager;
 
+    public ServicioGPS() {
+
+    }
 
     private ServicioGPS(Context context) {
         super();
