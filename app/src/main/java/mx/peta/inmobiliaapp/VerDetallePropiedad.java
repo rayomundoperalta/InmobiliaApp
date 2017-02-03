@@ -231,8 +231,9 @@ public class VerDetallePropiedad extends AppCompatActivity {
                     // Lo cual solo se hace si tiene estimaciones compradas disponibles
                     dsEstimadores = new EstimacionesDataSource(getApplicationContext());
                     final int cuantasEstimaciones = dsEstimadores.getRegistro().estimaciones;
-                    if (cuantasEstimaciones > 0) {
-                        final String BASE_URL = "http://valjson.artica.com.mx/";
+                    if ( cuantasEstimaciones > 0) {
+                        //final String BASE_URL = "http://valjson.artica.com.mx/";
+                        final String BASE_URL = "http://peta.mx/";
                         Gson gson = new GsonBuilder()
                                 .setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
                                 .create();

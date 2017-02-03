@@ -127,12 +127,15 @@ public class CapturaCategorias extends AppCompatActivity {
                 // es necesario llamar al web service para conocer el valor del inmueble
                 dsEstimadores = new EstimacionesDataSource(getApplicationContext());
                 final int cuantasEstimaciones = dsEstimadores.getRegistro().estimaciones;
-                final String BASE_URL = "http://valjson.artica.com.mx/";
                 if (propiedad.getValEstimado() > 0.0) {
                     dsEstimadores.close();
                 }
                 else {
                     if (propiedad.getValEstimado() == 0.0 && cuantasEstimaciones > 0) {
+                        propiedad.setSensibilidad(4.0);
+
+                        //final String BASE_URL = "http://valjson.artica.com.mx/";
+                        final String BASE_URL = "http://peta.mx/";
                         Gson gson = new GsonBuilder()
                                 .setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
                                 .create();
@@ -144,7 +147,6 @@ public class CapturaCategorias extends AppCompatActivity {
                         //tipologia=2
                         //&CP=4318&delegacion=9003&entidad=9&proximidadUrbana=1&claseInmueble=5&vidautil=720&superTerreno=400&superConstruido=400
                         // &valConst=4000000&valConcluido=8000000&revisadoManualmente=0&USER=rayo&PASSWORD=rayo&sensibilidad=3.5
-                        propiedad.setSensibilidad(4.0);
                         Call<AvaluoValido> callApiService = apiService.getAvaluo(
                                 propiedad.getTipologia(),
                                 propiedad.getCP(),
@@ -377,7 +379,7 @@ public class CapturaCategorias extends AppCompatActivity {
                         .setNegativeButton("No", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                perderInformación = true;
+                                perderInformación = false;
                             }
                         })
                         .show();

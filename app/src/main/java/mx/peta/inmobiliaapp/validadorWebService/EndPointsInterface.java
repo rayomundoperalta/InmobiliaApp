@@ -10,7 +10,8 @@ import retrofit2.http.Query;
  */
 
 public interface EndPointsInterface {
-    @GET("validador.svc/avaluoValido")
+    //@GET("validador.svc/avaluoValido")
+    @GET("avaluo.php")
     Call<AvaluoValido>  getAvaluo(
             @Query("tipologia") Double tipologia,
             @Query("CP") Double CP,
